@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import {BrowserRouter as Router, Route, Switch, Link, Routes} from 'react-router-dom'
+import React, { Component } from 'react'
+import { BrowserRouter as Router, Route, Switch, Link, Routes } from 'react-router-dom'
 import withNavigation from './WithNavigation.jsx'
 import withParams from './WithParams.jsx'
 import AuthenticationService from './AuthenticationService.js'
@@ -11,49 +11,57 @@ import HeaderComponent from './HeaderComponent.jsx'
 import FooterComponent from './FooterComponent.jsx'
 import LogoutComponent from './LogoutComponent.jsx'
 import WelcomeComponent from './WelcomeComponent.jsx'
+import CommentComponent from './CommentComponent'
 
 
-
-class MoocApp extends Component{
-    render(){
+class MoocApp extends Component {
+    render() {
         //components that use withNavigate() allow them to navigate to another component programmatically
         const LoginComponentWithNavigation = withNavigation(LoginComponent);
         //Components using withParams() allow them to get key/value pairs of dynamic params from URL, 
         //for example /name=cs8803
         const WelcomeComponentWithParams = withParams(WelcomeComponent);
         const HeaderComponentWithNavigation = withNavigation(HeaderComponent);
-       
-        const isUserLoggedIn= AuthenticationService.isUserLoggedIn();
+        const ListCommentsComponentWithNavigation = withNavigation(ListCommentsComponent);
+        const CommentComponentWithParamsAndNavigation = withParams(withNavigation(CommentComponent));
+
+
+        const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
 
-        return(
+        return (
             <div className="MoocApp">
                 <Router>
-                    
-                <HeaderComponentWithNavigation/>
+
+                    <HeaderComponentWithNavigation />
                     <Routes>
-                        <Route path="/"  element={<LoginComponentWithNavigation/>}/>
-                        <Route path="/login" element={<LoginComponentWithNavigation/>}/>
+                        <Route path="/" element={<LoginComponentWithNavigation />} />
+                        <Route path="/login" element={<LoginComponentWithNavigation />} />
                         <Route path="/welcome/:name" element={
-                        <AuthenticatedRoute>
-                            <WelcomeComponentWithParams /> 
-                        </AuthenticatedRoute>
-                        }/>
+                            <AuthenticatedRoute>
+                                <WelcomeComponentWithParams />
+                            </AuthenticatedRoute>
+                        } />
                         <Route path="/comments" element={
-                        <AuthenticatedRoute>
-                            <ListCommentsComponent />
-                        </AuthenticatedRoute>
+                            <AuthenticatedRoute>
+                                <ListCommentsComponentWithNavigation />
+                            </AuthenticatedRoute>
                         } />
                         <Route path="/logout" element={
-                        <AuthenticatedRoute>
-                            <LogoutComponent />
-                        </AuthenticatedRoute>
+                            <AuthenticatedRoute>
+                                <LogoutComponent />
+                            </AuthenticatedRoute>
+                        } />
+                        <Route path="/comments/:id" element={
+                            <AuthenticatedRoute>
+                                <CommentComponentWithParamsAndNavigation/>
+                            </AuthenticatedRoute>
                         } />
                         <Route path="*" element={<ErrorComponent />} />
-                      </Routes>
-                      <FooterComponent/>
+                    </Routes>
+                    <FooterComponent />
                 </Router>
-                
+
                 {/* <LoginComponent/>
                 <WelcomeComponent/> */}
             </div>
