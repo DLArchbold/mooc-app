@@ -15,6 +15,7 @@ import CommentComponent from './CommentComponent'
 
 
 class MoocApp extends Component {
+//test Jira
     render() {
         //components that use withNavigate() allow them to navigate to another component programmatically
         const LoginComponentWithNavigation = withNavigation(LoginComponent);
