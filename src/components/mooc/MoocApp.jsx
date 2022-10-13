@@ -12,10 +12,11 @@ import FooterComponent from './FooterComponent.jsx'
 import LogoutComponent from './LogoutComponent.jsx'
 import WelcomeComponent from './WelcomeComponent.jsx'
 import CommentComponent from './CommentComponent'
+import LessonComponent from './LessonComponent.jsx'
 
 
 class MoocApp extends Component {
-//test Jira
+
     render() {
         //components that use withNavigate() allow them to navigate to another component programmatically
         const LoginComponentWithNavigation = withNavigation(LoginComponent);
@@ -45,7 +46,7 @@ class MoocApp extends Component {
                         } />
                         <Route path="/comments" element={
                             <AuthenticatedRoute>
-                                <ListCommentsComponentWithNavigation />
+                                <ListCommentsComponentWithNavigation/>
                             </AuthenticatedRoute>
                         } />
                         <Route path="/logout" element={
@@ -58,6 +59,11 @@ class MoocApp extends Component {
                                 <CommentComponentWithParamsAndNavigation/>
                             </AuthenticatedRoute>
                         } />
+                        <Route path="/lesson" element = {
+                            <AuthenticatedRoute>
+                                <LessonComponent/>
+                            </AuthenticatedRoute>
+                        }/>
                         <Route path="*" element={<ErrorComponent />} />
                     </Routes>
                     <FooterComponent />
