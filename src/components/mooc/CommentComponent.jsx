@@ -130,7 +130,7 @@ class CommentComponent extends Component {
                                         className="alert alert-warning" />
                                     <ErrorMessage name="inResponseTo" component="div"
                                         className="alert alert-warning" />
-
+                                    
 
                                     <fieldset className="form-group">
                                         <label>Description</label>

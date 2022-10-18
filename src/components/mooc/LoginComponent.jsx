@@ -7,7 +7,7 @@ class LoginComponent extends Component {
     constructor(props){
         super(props)
         this.state={
-            username: 'cs8803',
+            username: 'Instructor 1',
             password:'',
             hasLoginFailed: false,
             showSuccessMessage:false
@@ -23,7 +23,9 @@ class LoginComponent extends Component {
 
     loginClicked(){
 
-        if(this.state.username==='cs8803' && this.state.password==='weijin'){
+        
+
+        if((this.state.username==='Instructor 1' && this.state.password==='weijin') || (this.state.username === 'Student 1' && this.state.password === '')){
            AuthenticationService.registerSuccessfulLogin(this.state.username, this.state.password)
             // this.props.history.push("/welcome")
             //use ticks not single quotes

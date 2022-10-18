@@ -64,7 +64,7 @@ public class CommentResource {
 	public ResponseEntity<Comment> createComment(
 			@PathVariable String username, @RequestBody Comment comment){
 		
-		
+		comment.setUsername(username);
 		Comment createdComment = commentService.save(comment);
 		
 		//Location
