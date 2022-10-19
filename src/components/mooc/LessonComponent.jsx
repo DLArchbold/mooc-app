@@ -13,7 +13,9 @@ class LessonComponent extends Component {
         this.retrieveWelcomeMessage = this.retrieveWelcomeMessage.bind(this)
         this.state = {
             welcomeMessage: '',
-            addComment: new Boolean(false),
+            addComment: Boolean(false),
+            addCommentReply: Boolean(false),
+            inResponseTo: '',
             description: "",
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
             username: "",
@@ -35,12 +37,13 @@ class LessonComponent extends Component {
             <>
                 <h1>Lesson</h1>
                 <div className="container">
-                    <img src={require('../../document.PNG')} height={700} width={600} />
+                    <img src={require('../../document.PNG')} height={700} width={600} align="center" />
 
                 </div>
                 <div className="container">
 
-                    <button onClick={this.enableCommentForm} className="btn ">Add Comment</button>
+                    <button onClick={() =>
+                        this.enableCommentForm(null)} className="btn ">Comment on this video</button>
                 </div>
 
                 <div className="container" >
@@ -55,7 +58,7 @@ class LessonComponent extends Component {
 
 
 
-                {this.state.addComment !== false && (<div className="container">
+                {this.state.addComment === true && (<div className="container">
 
 
                     <Formik
@@ -84,7 +87,7 @@ class LessonComponent extends Component {
                                         <label>In response to</label>
                                         <Field className="form-control" type="number" name="inResponseTo" />
                                     </fieldset> */}
-                                    <button className="btn btn-success" type="submit">Save</button>
+                                    <button className="btn btn-success" type="submit">Add comment to lesson</button>
                                 </Form>
                             )
                         }
@@ -94,21 +97,59 @@ class LessonComponent extends Component {
                 )}
 
                 <div>
+                    {/* Unpack each comment on this video to a card  */}
+
                     {
                         this.state.comments.map(
                             comment =>
-                                <div className="card-body" align="left">
-                                     <h5 className="card-title"> {comment.username} </h5>
-                                    
+                                <div className="card-body" align="center" key={comment.id}>
 
+                                    <h5 className="card-title"> {comment.username} </h5>
                                     <p className="card-text">{comment.description}</p>
-                                    <button className="btn btn-primary btn-sm">Reply to comment</button>
-                                   <div>
-                                    <br></br>
+                                    <button className="btn btn-primary btn-sm" onClick={() =>
+                                        this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                                    <div>
+                                        <br></br>
                                     </div>
+                                    
+                                    
+                                    {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&(<div className="container">
+
+                                        <Formik
+                                            initialValues={{ description }}
+                                            onSubmit={this.onSubmit}
+                                            validateOnBlur={false}
+                                            validateOnChange={false}
+                                            // validate={this.validate}
+                                            enableReinitialize={true}
+                                        >
+                                            {
+                                                (props) => (
+                                                    <Form>
+                                                        <ErrorMessage name="description" component="div"
+                                                            className="alert alert-warning" />
+                                                        {/* <ErrorMessage name="inResponseTo" component="div"
+                    className="alert alert-warning" /> */}
+
+
+                                                        <fieldset className="form-group">
+                                                            <label>Comment Description</label>
+                                                            <Field className="form-control" type="text" name="description" />
+                                                        </fieldset>
+
+                                                        {/* <fieldset className="form-group">
+                    <label>In response to</label>
+                    <Field className="form-control" type="number" name="inResponseTo" />
+                </fieldset> */}
+                                                        <button className="btn btn-success" type="submit">Reply</button>
+                                                    </Form>
+                                                )
+                                            }
+
+                                        </Formik>
+                                    </div>
+                                    )}
                                 </div>
-
-
                         )
                     }
                 </div>
@@ -117,17 +158,33 @@ class LessonComponent extends Component {
         )
     }
 
-    enableCommentForm() {
-        this.setState({
-            addComment: !this.state.addComment
-        })
+    enableCommentForm(commentID) {
+        
+        if (commentID === null) {
+            //Creating comment for video
+            this.setState({
+                addComment: !this.state.addComment
+            })
+        } else {
+            //Creating reply to comment
+            console.log("in enableCommentForm " + commentID)
+            this.setState({
+                addCommentReply: !this.state.addCommentReply,
+                inResponseTo: parseInt(commentID)
+            })
+
+
+        }
+        console.log("addCommentReply " + this.state.addCommentReply)
+        // console.log("inResponseTo" + this.state.inResponseTo)
     }
 
     componentDidMount() {
 
         //Hide comment form when refreshing/first landing on this page
         this.setState({
-            addComment: false
+            addComment: false,
+            addCommentReply:false
         })
 
         // //If it's adding a Comment then no need retrieve
@@ -167,7 +224,7 @@ class LessonComponent extends Component {
     onSubmit(values) {
         let username = AuthenticationService.getLoggedInUserName()
         // console.log("state.id" + this.state.id);
-        if (true) {
+        if (this.state.addComment === true && this.state.addCommentReply === false) {
             console.log("username: " + username)
             console.log("replying to lesson")
             CommentDataService.createComment(username, {
@@ -196,27 +253,37 @@ class LessonComponent extends Component {
                 })
             )
         }
-        // else {
-        //     //implement later
-        //     console.log("replying to comment")
-        //     CommentDataService.updateComment(username, this.state.id, {
-        //         //Use state values for those which are carried over from ListComments
-        //         //Use values. if obtained from Formik.
-        //         //
-        //         id: this.state.id,
-        //         description: values.description,
-        //         inResponseTo: values.inResponseTo,
-        //         targetDate: this.state.targetDate,
-        //         username: this.state.username
-        //     }).then(
-        //         //When successfully update redirect user to list all Comments
-        //         () => {
-        //             this.props.navigate("/comments")
-        //         }
 
-        //     )
-        // }
-        console.log("in onValidate")
+        if (this.state.addComment === false && this.state.addCommentReply === true) {
+            console.log("replying to comment")
+            console.log("username: " + username)
+            CommentDataService.createComment(username, {
+                //Use state values for those which are carried over from ListComments
+                //Use values. if obtained from Formik.
+                //
+                id: -1,
+                description: values.description,
+                inResponseTo: this.state.inResponseTo, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
+                targetDate: this.state.targetDate,
+                username: this.state.username
+            }).then(
+                //When successfully replied to comment
+                () => {
+                    // this.props.navigate("/comments")
+                    console.log("replying to comment success")
+                    this.setState({
+                        successMessage: "replying to comment success"
+                    })
+                    this.componentDidMount()
+                }
+
+            ).catch(
+                error => this.setState({
+                    successMessage: error.response.data.message
+                })
+            )
+        }
+        console.log("in onSubmit")
     }
 
 
