@@ -34,7 +34,7 @@ class LessonComponent extends Component {
     render() {
 
         let { description } = this.state
-        let currentTopLevelComment = 0
+        let currentTopLevelCommentID = 0
         let hasReplies = false
         return (
             <>
@@ -108,9 +108,10 @@ class LessonComponent extends Component {
                                 <>
                                     {/* Only display comments for lesson for top level  */}
                                     {comment.inResponseTo === 0 &&
-                                        (<div className="card-body" align="center" key={comment.id}>
+                                        (<div className="card-body"  align="center" key={comment.id}>
                                             {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
-                                            {currentTopLevelComment = comment.id}
+                                            <br></br><br></br><br></br>
+                                            {(currentTopLevelCommentID = comment.id)}
                                             <h5 className="card-title"> {comment.username} - (comment id: {comment.id})</h5>
                                             <p className="card-text">{comment.description}</p>
                                             <button className="btn btn-primary btn-sm" onClick={() =>
@@ -173,40 +174,25 @@ class LessonComponent extends Component {
 
                                     }
 
-                                    
+
                                     {/*Displaying 2nd level comments that reply to top-level comments */}
                                     {(() => {
-                                        var secondLevelComments = this.displayNestedReplies(comment.id)
+                                        var secondLevelComments = this.displayNestedReplies(comment.id, currentTopLevelCommentID)
                                         // var combinedReplies = this.displayNestedReplies(comment.id)
                                         if (secondLevelComments.length > 0) {
                                             hasReplies = true
                                         } else {
                                             hasReplies = false
                                         }
-                                        // if (combinedReplies !== "") {
-                                        //     hasReplies = true
-                                        // } else {
-                                        //     hasReplies = false
-                                        // }
 
-                                        // <div>
-                                        //     combinedReplies
-                                        // </div>
-                                        // // <div dangerouslySetInnerHTML={{ __html: combinedReplies }} />
 
                                         return (secondLevelComments.map(comment =>
                                             <>
-                                                <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to top-level comment id: {currentTopLevelComment} </h5>
+                                                <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to top-level comment id: {currentTopLevelCommentID} </h5>
                                                 <p className="card-text">{comment.description}</p>
                                                 <button className="btn btn-primary btn-sm" onClick={() =>
                                                     this.enableCommentForm(comment.id)}>Reply to above comment</button>
-                                                <div>
-                                                    <br></br>
-                                                </div>
 
-                                                <div>
-                                                    <br></br>
-                                                </div>
 
                                                 {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
                                                     (<div className="container">
@@ -249,35 +235,16 @@ class LessonComponent extends Component {
                                             </>
                                         ))
 
-                                        //WORKS AS OF NOW:
-                                        // return <div dangerouslySetInnerHTML={{ __html:combinedReplies}}></div>
 
-
-                                        // const parse = require('html-react-parser');
-                                        // parse('<div>AAAAAAAAAAAAAAAAAAAAA</div>')
-
-
-
-                                        // for (var i = 0; i < secondLevelComments.length; i++) {
-
-                                        //     console.log("id : " + comment.id + "second level comments: " + secondLevelComments[i].description)
-                                        //     //find way to retrieve values of retrieved JSON object and to return HTML 
-                                        //     // return <div> {secondLevelComments[i].description} </div>
-                                        //     console.log("to print second level comment of ID: " + secondLevelComments[i].id)
-                                        //     var toDisplay = <div> {secondLevelComments[i].description} </div>
-                                        //     return <div> {secondLevelComments[i].description} </div>
-
-                                        // }
-
-                                        // return {combinedReplies}
                                     })()}
 
-                                    {(() => {
+                                    {/*line breaks between top-level comments*/}
+                                    {/* {(() => {
 
                                         if (hasReplies) {
                                             return <div> <br></br><br></br><br></br></div>
                                         }
-                                    })()}
+                                    })()} */}
 
 
 
@@ -293,12 +260,12 @@ class LessonComponent extends Component {
         )
     }
 
-    displayNestedReplies(commentID) {
+    displayNestedReplies(commentID, currentTopLevelCommentID) {
 
-        
+
         var comments = this.state.comments
         //terminating recursive condition: when no more comments are replies to any upper level comments
-        
+
 
         var secondLevelComments = []
         var combinedReplies = ""
