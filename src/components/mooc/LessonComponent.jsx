@@ -290,7 +290,7 @@ class LessonComponent extends Component {
         
 
         if (commentReplies.length > 0) {
-            // let { description } = this.state;
+            let { description } = this.state;
         return (commentReplies.map(comment =>
             <>
                 <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
