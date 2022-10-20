@@ -263,7 +263,7 @@ class LessonComponent extends Component {
         )
     }
 
-    displayNestedReplies(commentID) {
+    displayNestedReplies(commentIDToBeRepliedTo) {
 
 
         var comments = this.state.comments
@@ -275,16 +275,33 @@ class LessonComponent extends Component {
         for (var i = 0; i < comments.length; i++) {
             var singleComment = comments[i]
             // console.log("in displayNestedReplies " + obj.description)
-            console.log("potential second level comment .inResponseTo: " + singleComment.inResponseTo + " singleComment id: " + singleComment.id + " commentID: " + commentID)
-            console.log("still in first loop")
-            if (singleComment.inResponseTo == commentID) {
-                console.log(" singleComment id: " + singleComment.id + " second level comment .inResponseTo: " + singleComment.inResponseTo)
-                console.log("in second loop")
+            // console.log("potential second level comment .inResponseTo: " + singleComment.inResponseTo + " singleComment id: " + singleComment.id + " commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
+            // console.log("still in first loop")
+            if (singleComment.inResponseTo == commentIDToBeRepliedTo) {
+                // console.log(" singleComment id: " + singleComment.id + " second level comment .inResponseTo: " + singleComment.inResponseTo)
+                // console.log("in second loop")
                 // var singleCommentDescription = "<div>" + singleComment.description + "</div><br/>"
                 // combinedReplies += singleCommentDescription
                 secondLevelComments.push(singleComment)
             }
         }
+
+
+        //recurse over 2nd secondLevelComments to get nested replies
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return secondLevelComments
 
