@@ -293,7 +293,9 @@ class LessonComponent extends Component {
             let { description } = this.state;
         return (commentReplies.map(comment =>
             <div style = {{marginLeft: spacing +'rem'}}>
-                {/* initially style = margin-right: 1rem */}
+
+                {/* initially style = margin-right: 1rem 
+                https://getbootstrap.com/docs/4.0/layout/utilities-for-layout/*/}
                 <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
                 <p className="card-text">{comment.description}</p>
                 <button className="btn btn-primary btn-sm" onClick={() =>
