@@ -179,7 +179,7 @@ class LessonComponent extends Component {
                                     {/*Displaying only 2nd level comments that reply to top-level comments */}
                                     {(() => {
                                         if(comment.id == currentTopLevelCommentID){
-                                            return this.displayNestedReplies(comment.id);
+                                            return this.displayNestedReplies(comment.id, 10);
                                         }
                                         
                                         //                                 if (comment.id == currentTopLevelCommentID) {
@@ -268,7 +268,7 @@ class LessonComponent extends Component {
         )
     }
 
-    displayNestedReplies(commentIDToBeRepliedTo) {
+    displayNestedReplies(commentIDToBeRepliedTo, spacing) {
         //commentIDToBeRepliedTo
 
         var comments = this.state.comments
@@ -292,7 +292,8 @@ class LessonComponent extends Component {
         if (commentReplies.length > 0) {
             let { description } = this.state;
         return (commentReplies.map(comment =>
-            <>
+            <div style = {{marginLeft: spacing +'rem'}}>
+                {/* initially style = margin-right: 1rem */}
                 <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
                 <p className="card-text">{comment.description}</p>
                 <button className="btn btn-primary btn-sm" onClick={() =>
@@ -341,9 +342,9 @@ className="alert alert-warning" /> */}
 
 
                 {(() => {
-                    return this.displayNestedReplies(comment.id)
+                    return this.displayNestedReplies(comment.id, spacing +2)
                 })()}
-            </>
+            </div>
 
         
         ))
