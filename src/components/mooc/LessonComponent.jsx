@@ -108,7 +108,7 @@ class LessonComponent extends Component {
                                 <>
                                     {/* Only display comments for lesson for top level  */}
                                     {comment.inResponseTo === 0 &&
-                                        (<div className="card-body"  align="center" key={comment.id}>
+                                        (<div className="card-body" align="center" key={comment.id}>
                                             {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
                                             <br></br><br></br><br></br>
                                             {(currentTopLevelCommentID = comment.id)}
@@ -175,65 +175,68 @@ class LessonComponent extends Component {
                                     }
 
 
-                                    {/*Displaying 2nd level comments that reply to top-level comments */}
+                                    {/*Displaying only 2nd level comments that reply to top-level comments */}
                                     {(() => {
-                                        var secondLevelComments = this.displayNestedReplies(comment.id, currentTopLevelCommentID)
-                                        // var combinedReplies = this.displayNestedReplies(comment.id)
-                                        if (secondLevelComments.length > 0) {
-                                            hasReplies = true
-                                        } else {
-                                            hasReplies = false
+                                        if (comment.id == currentTopLevelCommentID) {
+                                            var secondLevelComments = this.displayNestedReplies(currentTopLevelCommentID)
+                                            // var combinedReplies = this.displayNestedReplies(comment.id)
+                                            if (secondLevelComments.length > 0) {
+                                                hasReplies = true
+                                            } else {
+                                                hasReplies = false
+                                            }
+
+
+                                            return (secondLevelComments.map(comment =>
+                                                <>
+                                                    <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to top-level comment id: {currentTopLevelCommentID} </h5>
+                                                    <p className="card-text">{comment.description}</p>
+                                                    <button className="btn btn-primary btn-sm" onClick={() =>
+                                                        this.enableCommentForm(comment.id)}>Reply to above comment</button>
+
+
+                                                    {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
+                                                        (<div className="container">
+
+                                                            <Formik
+                                                                initialValues={{ description }}
+                                                                onSubmit={this.onSubmit}
+                                                                validateOnBlur={false}
+                                                                validateOnChange={false}
+                                                                // validate={this.validate}
+                                                                enableReinitialize={true}
+                                                            >
+                                                                {
+                                                                    (props) => (
+                                                                        <Form>
+                                                                            <ErrorMessage name="description" component="div"
+                                                                                className="alert alert-warning" />
+                                                                            {/* <ErrorMessage name="inResponseTo" component="div"
+        className="alert alert-warning" /> */}
+
+
+                                                                            <fieldset className="form-group">
+                                                                                <label>Comment Description</label>
+                                                                                <Field className="form-control" type="text" name="description" />
+                                                                            </fieldset>
+
+                                                                            {/* <fieldset className="form-group">
+        <label>In response to</label>
+        <Field className="form-control" type="number" name="inResponseTo" />
+        </fieldset> */}
+                                                                            <button className="btn btn-success" type="submit">Reply</button>
+                                                                        </Form>
+                                                                    )
+                                                                }
+
+                                                            </Formik>
+                                                        </div>
+                                                        )
+                                                    }
+                                                </>
+                                            ))
                                         }
 
-
-                                        return (secondLevelComments.map(comment =>
-                                            <>
-                                                <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to top-level comment id: {currentTopLevelCommentID} </h5>
-                                                <p className="card-text">{comment.description}</p>
-                                                <button className="btn btn-primary btn-sm" onClick={() =>
-                                                    this.enableCommentForm(comment.id)}>Reply to above comment</button>
-
-
-                                                {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
-                                                    (<div className="container">
-
-                                                        <Formik
-                                                            initialValues={{ description }}
-                                                            onSubmit={this.onSubmit}
-                                                            validateOnBlur={false}
-                                                            validateOnChange={false}
-                                                            // validate={this.validate}
-                                                            enableReinitialize={true}
-                                                        >
-                                                            {
-                                                                (props) => (
-                                                                    <Form>
-                                                                        <ErrorMessage name="description" component="div"
-                                                                            className="alert alert-warning" />
-                                                                        {/* <ErrorMessage name="inResponseTo" component="div"
-    className="alert alert-warning" /> */}
-
-
-                                                                        <fieldset className="form-group">
-                                                                            <label>Comment Description</label>
-                                                                            <Field className="form-control" type="text" name="description" />
-                                                                        </fieldset>
-
-                                                                        {/* <fieldset className="form-group">
-    <label>In response to</label>
-    <Field className="form-control" type="number" name="inResponseTo" />
-    </fieldset> */}
-                                                                        <button className="btn btn-success" type="submit">Reply</button>
-                                                                    </Form>
-                                                                )
-                                                            }
-
-                                                        </Formik>
-                                                    </div>
-                                                    )
-                                                }
-                                            </>
-                                        ))
 
 
                                     })()}
@@ -260,7 +263,7 @@ class LessonComponent extends Component {
         )
     }
 
-    displayNestedReplies(commentID, currentTopLevelCommentID) {
+    displayNestedReplies(commentID) {
 
 
         var comments = this.state.comments
@@ -268,14 +271,17 @@ class LessonComponent extends Component {
 
 
         var secondLevelComments = []
-        var combinedReplies = ""
+        // var combinedReplies = ""
         for (var i = 0; i < comments.length; i++) {
             var singleComment = comments[i]
             // console.log("in displayNestedReplies " + obj.description)
-            if (singleComment.inResponseTo === commentID) {
-                console.log("second level comment added to comment id: " + singleComment.id)
-                var singleCommentDescription = "<div>" + singleComment.description + "</div><br/>"
-                combinedReplies += singleCommentDescription
+            console.log("potential second level comment .inResponseTo: " + singleComment.inResponseTo + " singleComment id: " + singleComment.id + " commentID: " + commentID)
+            console.log("still in first loop")
+            if (singleComment.inResponseTo == commentID) {
+                console.log(" singleComment id: " + singleComment.id + " second level comment .inResponseTo: " + singleComment.inResponseTo)
+                console.log("in second loop")
+                // var singleCommentDescription = "<div>" + singleComment.description + "</div><br/>"
+                // combinedReplies += singleCommentDescription
                 secondLevelComments.push(singleComment)
             }
         }
