@@ -6,6 +6,7 @@ import java.util.Objects;
 public class Comment {
 	private long id;
 	private String description;
+	private String urgencyLevel;
 	private long inResponseTo;
 	private Date targetDate;
 	private String username;
@@ -15,10 +16,11 @@ public class Comment {
 		
 	}
 	
-	public Comment(long id, String description, long inResponseTo, Date targetDate, String username) {
+	public Comment(long id, String description, String urgencyLevel, long inResponseTo, Date targetDate, String username) {
 		super();
 		this.id = id;
 		this.description = description;
+		this.urgencyLevel = urgencyLevel;
 		this.inResponseTo = inResponseTo;
 		this.targetDate = targetDate;
 		this.username = username;
@@ -62,6 +64,14 @@ public class Comment {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getUrgencyLevel() {
+		return urgencyLevel;
+	}
+
+	public void setUrgencyLevel(String urgencyLevel) {
+		this.urgencyLevel = urgencyLevel;
 	}
 
 	@Override

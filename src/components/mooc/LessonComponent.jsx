@@ -18,6 +18,7 @@ class LessonComponent extends Component {
             addCommentReply: Boolean(false),
             inResponseTo: '',
             description: "",
+            urgencyLevel: "1",
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
             username: "",
             successMessage: "",
@@ -34,9 +35,10 @@ class LessonComponent extends Component {
 
     render() {
 
-        let { description } = this.state
+        let { description, urgencyLevel } = this.state
         let currentTopLevelCommentID = 0
         let hasReplies = false
+        let loggedInUserName = AuthenticationService.getLoggedInUserName()
         return (
             <>
                 <h1>Lesson</h1>
@@ -66,7 +68,7 @@ class LessonComponent extends Component {
 
 
                     <Formik
-                        initialValues={{ description }}
+                        initialValues={{ description, urgencyLevel }}
                         onSubmit={this.onSubmit}
                         validateOnBlur={false}
                         validateOnChange={false}
@@ -81,7 +83,21 @@ class LessonComponent extends Component {
                                     {/* <ErrorMessage name="inResponseTo" component="div"
                                         className="alert alert-warning" /> */}
 
-
+                                    {loggedInUserName.includes("Student", 0) &&
+                                        (<fieldset className="form-group">
+                                            <label>Urgency level</label>
+                                            <Field
+                                                className="form-control"
+                                                as="select"
+                                                // onChange={this.onItemTypeDropdownSelected}
+                                                name="urgencyLevel"
+                                            >
+                                                <option value="3">High</option>
+                                                <option value="2">Medium</option>
+                                                <option value="1">Low</option>
+                                            </Field>
+                                        </fieldset>
+                                        )}
                                     <fieldset className="form-group">
                                         <label>Comment Description</label>
                                         <Field className="form-control" type="text" name="description" />
@@ -114,6 +130,10 @@ class LessonComponent extends Component {
                                             <br></br><br></br><br></br>
                                             {(currentTopLevelCommentID = comment.id)}
                                             <h5 className="card-title"> {comment.username} - (comment id: {comment.id})</h5>
+
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p className="card-text" style={{ color: "DarkRed" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p className="card-text" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p className="card-text" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
                                             <p className="card-text">{comment.description}</p>
                                             <button className="btn btn-primary btn-sm" onClick={() =>
                                                 this.enableCommentForm(comment.id)}>Reply to above comment</button>
@@ -124,8 +144,9 @@ class LessonComponent extends Component {
                                             {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
                                                 (<div className="container">
 
+
                                                     <Formik
-                                                        initialValues={{ description }}
+                                                        initialValues={{ description, urgencyLevel }}
                                                         onSubmit={this.onSubmit}
                                                         validateOnBlur={false}
                                                         validateOnChange={false}
@@ -139,7 +160,21 @@ class LessonComponent extends Component {
                                                                         className="alert alert-warning" />
                                                                     {/* <ErrorMessage name="inResponseTo" component="div"
     className="alert alert-warning" /> */}
-
+                                                                    {this.state.username.includes("Student", 0) &&
+                                                                        (<fieldset className="form-group">
+                                                                            <label>Urgency level</label>
+                                                                            <Field
+                                                                                className="form-control"
+                                                                                as="select"
+                                                                                // onChange={this.onItemTypeDropdownSelected}
+                                                                                name="urgencyLevel"
+                                                                            >
+                                                                                <option value="3">High</option>
+                                                                                <option value="2">Medium</option>
+                                                                                <option value="1">Low</option>
+                                                                            </Field>
+                                                                        </fieldset>
+                                                                        )}
 
                                                                     <fieldset className="form-group">
                                                                         <label>Comment Description</label>
@@ -178,10 +213,10 @@ class LessonComponent extends Component {
 
                                     {/*Displaying only 2nd level comments that reply to top-level comments */}
                                     {(() => {
-                                        if(comment.id == currentTopLevelCommentID){
+                                        if (comment.id == currentTopLevelCommentID) {
                                             return this.displayNestedReplies(comment.id, 10);
                                         }
-                                        
+
                                         //                                 if (comment.id == currentTopLevelCommentID) {
                                         //                                     var secondLevelComments = this.displayNestedReplies(currentTopLevelCommentID)
                                         //                                     // var combinedReplies = this.displayNestedReplies(comment.id)
@@ -276,7 +311,7 @@ class LessonComponent extends Component {
 
 
         var commentReplies = []
-        console.log("commentIDToBeRepliedTo: " + commentIDToBeRepliedTo )
+        console.log("commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
         for (var i = 0; i < comments.length; i++) {
             var singleComment = comments[i]
 
@@ -287,125 +322,99 @@ class LessonComponent extends Component {
             }
         }
 
-        
+
 
         if (commentReplies.length > 0) {
-            let { description } = this.state;
-        return (commentReplies.map(comment =>
-            <div style = {{marginLeft: spacing +'rem'}}>
+            let { description, urgencyLevel } = this.state;
+            return (commentReplies.map(comment =>
 
-                {/* initially style = margin-right: 1rem 
+
+                <div style={{ marginLeft: spacing + 'rem' }}>
+                    {/* initially style = margin-right: 1rem 
                 https://getbootstrap.com/docs/4.0/layout/utilities-for-layout/*/}
-                <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
-                <p className="card-text">{comment.description}</p>
-                <button className="btn btn-primary btn-sm" onClick={() =>
-                    this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                    <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p className="card-text" style={{ color: "Crimson" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p className="card-text" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p className="card-text" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    <p className="card-text">{comment.description}</p>
+                    <button className="btn btn-primary btn-sm" onClick={() =>
+                        this.enableCommentForm(comment.id)}>Reply to above comment</button>
 
+                    {(() => {
+                        let username = comment.username
+                    })()}
 
-                {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
-                    (<div className="container">
+                    {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
+                        (<div className="container">
 
-                        <Formik
-                            initialValues={{ description }}
-                            onSubmit={this.onSubmit}
-                            validateOnBlur={false}
-                            validateOnChange={false}
-                            // validate={this.validate}
-                            enableReinitialize={true}
-                        >
-                            {
-                                (props) => (
-                                    <Form>
-                                        <ErrorMessage name="description" component="div"
-                                            className="alert alert-warning" />
-                                        {/* <ErrorMessage name="inResponseTo" component="div"
+                            <Formik
+                                initialValues={{ description, urgencyLevel }}
+                                onSubmit={this.onSubmit}
+                                validateOnBlur={false}
+                                validateOnChange={false}
+                                // validate={this.validate}
+                                enableReinitialize={true}
+                            >
+                                {
+                                    (props) => (
+                                        <Form>
+                                            <ErrorMessage name="description" component="div"
+                                                className="alert alert-warning" />
+                                            {/* <ErrorMessage name="inResponseTo" component="div"
 className="alert alert-warning" /> */}
 
+                                            {this.state.username.includes("Student", 0) &&
+                                                (<fieldset className="form-group">
+                                                    <label>Urgency level</label>
+                                                    <Field
+                                                        className="form-control"
+                                                        as="select"
+                                                        // onChange={this.onItemTypeDropdownSelected}
+                                                        name="urgencyLevel"
+                                                    >
+                                                        <option value="3">High</option>
+                                                        <option value="2">Medium</option>
+                                                        <option value="1">Low</option>
+                                                    </Field>
+                                                </fieldset>
+                                                )}
+                                            <fieldset className="form-group">
+                                                <label>Comment Description</label>
+                                                <Field className="form-control" type="text" name="description" />
+                                            </fieldset>
 
-                                        <fieldset className="form-group">
-                                            <label>Comment Description</label>
-                                            <Field className="form-control" type="text" name="description" />
-                                        </fieldset>
 
-                                        {/* <fieldset className="form-group">
+                                            {/* <fieldset className="form-group">
 <label>In response to</label>
 <Field className="form-control" type="number" name="inResponseTo" />
 </fieldset> */}
-                                        <button className="btn btn-success" type="submit">Reply</button>
-                                    </Form>
-                                )
-                            }
+                                            <button className="btn btn-success" type="submit">Reply</button>
+                                        </Form>
+                                    )
+                                }
 
-                        </Formik>
-                    </div>
-                    )
-                }
+                            </Formik>
+                        </div>
+                        )
+                    }
 
 
 
-                {(() => {
-                    return this.displayNestedReplies(comment.id, spacing +2)
-                })()}
-            </div>
+                    {(() => {
+                        return this.displayNestedReplies(comment.id, spacing + 2)
+                    })()}
+                </div>
 
-        
-        ))
+
+            ))
         } else {
             return
         }
 
-        
-
-
-
-
-        //recurse over 2nd secondLevelComments to get nested replies
-        // if (secondLevelComments.length != 0) {
-        //     for (var i = 0; i < secondLevelComments.length; i++) {
-        //         this.displayNestedReplies(secondLevelComments[i].id)
-        //     }
-        // }
-
-
-
-        // return secondLevelComments
 
     }
 
 
-    // displayNestedReplies(commentIDToBeRepliedTo) {
-    //     //commentIDToBeRepliedTo
-
-    //     var comments = this.state.comments
-    //     //terminating recursive condition: when no more comments are replies to any upper level comments
-
-
-    //     var secondLevelComments = []
-    //     var combinedReplies = ""
-    //     for (var i = 0; i < comments.length; i++) {
-    //         var singleComment = comments[i]
-    //         // console.log("in displayNestedReplies " + obj.description)
-    //         // console.log("potential second level comment .inResponseTo: " + singleComment.inResponseTo + " singleComment id: " + singleComment.id + " commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
-    //         // console.log("still in first loop")
-    //         if (singleComment.inResponseTo == commentIDToBeRepliedTo) {
-    //             // console.log(" singleComment id: " + singleComment.id + " second level comment .inResponseTo: " + singleComment.inResponseTo)
-    //             // console.log("in second loop")
-    //             // var singleCommentDescription = "<div>" + singleComment.description + "</div><br/>"
-    //             // combinedReplies += singleCommentDescription
-    //             secondLevelComments.push(singleComment)
-    //         }
-    //     }
-
-    //     //recurse over 2nd secondLevelComments to get nested replies
-    //     if (secondLevelComments.length != 0) {
-    //         for (var i = 0; i < secondLevelComments.length; i++) {
-    //             this.displayNestedReplies(secondLevelComments[i].id)
-    //         }
-    //     }
-
-    //     return secondLevelComments
-
-    // }
 
     enableCommentForm(commentID) {
 
@@ -433,22 +442,11 @@ className="alert alert-warning" /> */}
         //Hide comment form when refreshing/first landing on this page
         this.setState({
             addComment: false,
-            addCommentReply: false
+            addCommentReply: false,
+            username: AuthenticationService.getLoggedInUserName()
         })
 
-        // //If it's adding a Comment then no need retrieve
-        // if (this.state.id === -1) {
-        //     return
-        // }
 
-        // let username = AuthenticationService.getLoggedInUserName()
-        // CommentDataService.retrieveComment(username, this.state.id)
-        //     .then(
-        //         response => this.setState({
-        //             description: response.data.description,
-        //             inResponseTo: response.data.inResponseTo
-        //         }
-        //         ))
 
         console.log("componentDidMount")
         this.refreshComments();
@@ -471,6 +469,7 @@ className="alert alert-warning" /> */}
 
     //When Updating(PUT) or Creating(POST) comments
     onSubmit(values) {
+        console.log("Urgency level: " + values.urgencyLevel)
         let username = AuthenticationService.getLoggedInUserName()
         // console.log("state.id" + this.state.id);
         if (this.state.addComment === true && this.state.addCommentReply === false) {
@@ -482,6 +481,7 @@ className="alert alert-warning" /> */}
                 //
                 id: -1,
                 description: values.description,
+                urgencyLevel: values.urgencyLevel,
                 inResponseTo: 0, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
                 targetDate: this.state.targetDate,
                 username: this.state.username
@@ -512,6 +512,7 @@ className="alert alert-warning" /> */}
                 //
                 id: -1,
                 description: values.description,
+                urgencyLevel: values.urgencyLevel,
                 inResponseTo: this.state.inResponseTo, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
                 targetDate: this.state.targetDate,
                 username: this.state.username

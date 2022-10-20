@@ -12,9 +12,9 @@ public class CommentHardcodedService {
 	private static List<Comment> comments= new ArrayList<Comment>();
 	private static int idCounter = 0;
 	static {
-		comments.add(new Comment(++idCounter, "comment description", idCounter-1, new Date(), "instructor 1"));
-		comments.add(new Comment(++idCounter, "comment description 2", idCounter-1, new Date(), "instructor 1"));
-		comments.add(new Comment(++idCounter, "comment description 3", idCounter-1, new Date(), "instructor 1"));
+		comments.add(new Comment(++idCounter, "comment description", "", idCounter-1, new Date(), "Instructor 1"));
+		comments.add(new Comment(++idCounter, "comment description 2", "2", idCounter-1, new Date(), "Student 1"));
+		comments.add(new Comment(++idCounter, "comment description 3", "3", idCounter-1, new Date(), "Student 1"));
 	}
 	
 	public List<Comment> findAll(){
