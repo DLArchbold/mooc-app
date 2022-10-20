@@ -4,7 +4,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik'
 import moment from 'moment/moment'
 import AuthenticationService from './AuthenticationService'
 import CommentDataService from '../../api/comment/CommentDataService.js'
-
+import parse from 'html-react-parser';
 
 class LessonComponent extends Component {
 
@@ -20,19 +20,22 @@ class LessonComponent extends Component {
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
             username: "",
             successMessage: "",
-            comments: []
+            comments: [],
+            hasReplies: Boolean(false)
         }
         this.handleSuccessfulResponse = this.handleSuccessfulResponse.bind(this)
         this.handleError = this.handleError.bind(this)
         this.enableCommentForm = this.enableCommentForm.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
         this.validate = this.validate.bind(this)
+        this.displayNestedReplies = this.displayNestedReplies.bind(this)
     }
 
     render() {
 
         let { description } = this.state
-
+        let currentTopLevelComment = 0
+        let hasReplies = false
         return (
             <>
                 <h1>Lesson</h1>
@@ -97,60 +100,192 @@ class LessonComponent extends Component {
                 )}
 
                 <div>
-                    {/* Unpack each comment on this video to a card  */}
+                    {/* Unpack each comment on this video to a div card  */}
 
                     {
                         this.state.comments.map(
                             comment =>
-                                <div className="card-body" align="center" key={comment.id}>
+                                <>
+                                    {/* Only display comments for lesson for top level  */}
+                                    {comment.inResponseTo === 0 &&
+                                        (<div className="card-body" align="center" key={comment.id}>
+                                            {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
+                                            {currentTopLevelComment = comment.id}
+                                            <h5 className="card-title"> {comment.username} - (comment id: {comment.id})</h5>
+                                            <p className="card-text">{comment.description}</p>
+                                            <button className="btn btn-primary btn-sm" onClick={() =>
+                                                this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                                            <div>
+                                                <br></br>
+                                            </div>
 
-                                    <h5 className="card-title"> {comment.username} </h5>
-                                    <p className="card-text">{comment.description}</p>
-                                    <button className="btn btn-primary btn-sm" onClick={() =>
-                                        this.enableCommentForm(comment.id)}>Reply to above comment</button>
-                                    <div>
-                                        <br></br>
-                                    </div>
-                                    
-                                    
-                                    {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&(<div className="container">
+                                            {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
+                                                (<div className="container">
 
-                                        <Formik
-                                            initialValues={{ description }}
-                                            onSubmit={this.onSubmit}
-                                            validateOnBlur={false}
-                                            validateOnChange={false}
-                                            // validate={this.validate}
-                                            enableReinitialize={true}
-                                        >
-                                            {
-                                                (props) => (
-                                                    <Form>
-                                                        <ErrorMessage name="description" component="div"
-                                                            className="alert alert-warning" />
-                                                        {/* <ErrorMessage name="inResponseTo" component="div"
-                    className="alert alert-warning" /> */}
+                                                    <Formik
+                                                        initialValues={{ description }}
+                                                        onSubmit={this.onSubmit}
+                                                        validateOnBlur={false}
+                                                        validateOnChange={false}
+                                                        // validate={this.validate}
+                                                        enableReinitialize={true}
+                                                    >
+                                                        {
+                                                            (props) => (
+                                                                <Form>
+                                                                    <ErrorMessage name="description" component="div"
+                                                                        className="alert alert-warning" />
+                                                                    {/* <ErrorMessage name="inResponseTo" component="div"
+    className="alert alert-warning" /> */}
 
 
-                                                        <fieldset className="form-group">
-                                                            <label>Comment Description</label>
-                                                            <Field className="form-control" type="text" name="description" />
-                                                        </fieldset>
+                                                                    <fieldset className="form-group">
+                                                                        <label>Comment Description</label>
+                                                                        <Field className="form-control" type="text" name="description" />
+                                                                    </fieldset>
 
-                                                        {/* <fieldset className="form-group">
-                    <label>In response to</label>
-                    <Field className="form-control" type="number" name="inResponseTo" />
-                </fieldset> */}
-                                                        <button className="btn btn-success" type="submit">Reply</button>
-                                                    </Form>
+                                                                    {/* <fieldset className="form-group">
+    <label>In response to</label>
+    <Field className="form-control" type="number" name="inResponseTo" />
+    </fieldset> */}
+                                                                    <button className="btn btn-success" type="submit">Reply</button>
+                                                                </Form>
+                                                            )
+                                                        }
+
+                                                    </Formik>
+                                                </div>
                                                 )
                                             }
 
-                                        </Formik>
-                                    </div>
-                                    )}
-                                </div>
+
+
+
+
+                                        </div>
+
+
+
+
+
+
+                                        )
+
+                                    }
+
+                                    
+                                    {/*Displaying 2nd level comments that reply to top-level comments */}
+                                    {(() => {
+                                        var secondLevelComments = this.displayNestedReplies(comment.id)
+                                        // var combinedReplies = this.displayNestedReplies(comment.id)
+                                        if (secondLevelComments.length > 0) {
+                                            hasReplies = true
+                                        } else {
+                                            hasReplies = false
+                                        }
+                                        // if (combinedReplies !== "") {
+                                        //     hasReplies = true
+                                        // } else {
+                                        //     hasReplies = false
+                                        // }
+
+                                        // <div>
+                                        //     combinedReplies
+                                        // </div>
+                                        // // <div dangerouslySetInnerHTML={{ __html: combinedReplies }} />
+
+                                        return (secondLevelComments.map(comment =>
+                                            <>
+                                                <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to top-level comment id: {currentTopLevelComment} </h5>
+                                                <p className="card-text">{comment.description}</p>
+                                                <button className="btn btn-primary btn-sm" onClick={() =>
+                                                    this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                                                <div>
+                                                    <br></br>
+                                                </div>
+
+                                                <div>
+                                                    <br></br>
+                                                </div>
+
+                                                {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
+                                                    (<div className="container">
+
+                                                        <Formik
+                                                            initialValues={{ description }}
+                                                            onSubmit={this.onSubmit}
+                                                            validateOnBlur={false}
+                                                            validateOnChange={false}
+                                                            // validate={this.validate}
+                                                            enableReinitialize={true}
+                                                        >
+                                                            {
+                                                                (props) => (
+                                                                    <Form>
+                                                                        <ErrorMessage name="description" component="div"
+                                                                            className="alert alert-warning" />
+                                                                        {/* <ErrorMessage name="inResponseTo" component="div"
+    className="alert alert-warning" /> */}
+
+
+                                                                        <fieldset className="form-group">
+                                                                            <label>Comment Description</label>
+                                                                            <Field className="form-control" type="text" name="description" />
+                                                                        </fieldset>
+
+                                                                        {/* <fieldset className="form-group">
+    <label>In response to</label>
+    <Field className="form-control" type="number" name="inResponseTo" />
+    </fieldset> */}
+                                                                        <button className="btn btn-success" type="submit">Reply</button>
+                                                                    </Form>
+                                                                )
+                                                            }
+
+                                                        </Formik>
+                                                    </div>
+                                                    )
+                                                }
+                                            </>
+                                        ))
+
+                                        //WORKS AS OF NOW:
+                                        // return <div dangerouslySetInnerHTML={{ __html:combinedReplies}}></div>
+
+
+                                        // const parse = require('html-react-parser');
+                                        // parse('<div>AAAAAAAAAAAAAAAAAAAAA</div>')
+
+
+
+                                        // for (var i = 0; i < secondLevelComments.length; i++) {
+
+                                        //     console.log("id : " + comment.id + "second level comments: " + secondLevelComments[i].description)
+                                        //     //find way to retrieve values of retrieved JSON object and to return HTML 
+                                        //     // return <div> {secondLevelComments[i].description} </div>
+                                        //     console.log("to print second level comment of ID: " + secondLevelComments[i].id)
+                                        //     var toDisplay = <div> {secondLevelComments[i].description} </div>
+                                        //     return <div> {secondLevelComments[i].description} </div>
+
+                                        // }
+
+                                        // return {combinedReplies}
+                                    })()}
+
+                                    {(() => {
+
+                                        if (hasReplies) {
+                                            return <div> <br></br><br></br><br></br></div>
+                                        }
+                                    })()}
+
+
+
+                                </>
+
                         )
+
+
                     }
                 </div>
             </>
@@ -158,8 +293,32 @@ class LessonComponent extends Component {
         )
     }
 
-    enableCommentForm(commentID) {
+    displayNestedReplies(commentID) {
+
         
+        var comments = this.state.comments
+        //terminating recursive condition: when no more comments are replies to any upper level comments
+        
+
+        var secondLevelComments = []
+        var combinedReplies = ""
+        for (var i = 0; i < comments.length; i++) {
+            var singleComment = comments[i]
+            // console.log("in displayNestedReplies " + obj.description)
+            if (singleComment.inResponseTo === commentID) {
+                console.log("second level comment added to comment id: " + singleComment.id)
+                var singleCommentDescription = "<div>" + singleComment.description + "</div><br/>"
+                combinedReplies += singleCommentDescription
+                secondLevelComments.push(singleComment)
+            }
+        }
+
+        return secondLevelComments
+
+    }
+
+    enableCommentForm(commentID) {
+
         if (commentID === null) {
             //Creating comment for video
             this.setState({
@@ -184,7 +343,7 @@ class LessonComponent extends Component {
         //Hide comment form when refreshing/first landing on this page
         this.setState({
             addComment: false,
-            addCommentReply:false
+            addCommentReply: false
         })
 
         // //If it's adding a Comment then no need retrieve

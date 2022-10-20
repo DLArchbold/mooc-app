@@ -22,11 +22,13 @@ class CommentComponent extends Component {
 
     //When Updating(PUT) or Creating(POST) comments
     onSubmit(values) {
-        let username = AuthenticationService.getLoggedInUserName()
+        console.log("in onSubmit")
+        
+
         console.log("state.id" + this.state.id);
-        if(this.state.id === -1) {
+        if (this.state.id === -1) {
             console.log("in create")
-            CommentDataService.createComment(username, {
+            CommentDataService.createComment(this.state.username, {
                 //Use state values for those which are carried over from ListComments
                 //Use values. if obtained from Formik.
                 //
@@ -36,15 +38,15 @@ class CommentComponent extends Component {
                 targetDate: this.state.targetDate,
                 username: this.state.username
             }).then(
-                //When successfully update redirect user to list all Comments
+                //When successfully added redirect user to list all Comments
                 () => {
                     this.props.navigate("/comments")
                 }
 
             )
-        }else {
+        } else {
             console.log("in update")
-            CommentDataService.updateComment(username, this.state.id, {
+            CommentDataService.updateComment(this.state.username, this.state.id, {
                 //Use state values for those which are carried over from ListComments
                 //Use values. if obtained from Formik.
                 //
@@ -61,22 +63,23 @@ class CommentComponent extends Component {
 
             )
         }
-        console.log("in onValidate")
+        
     }
 
     componentDidMount() {
-
+        console.log("in componentDidMount")
         //If it's adding a Comment then no need retrieve
         if (this.state.id === -1) {
             return
         }
 
-        let username = AuthenticationService.getLoggedInUserName()
-        CommentDataService.retrieveComment(username, this.state.id)
+        let retrievedUsername = AuthenticationService.getLoggedInUserName()
+        CommentDataService.retrieveComment(retrievedUsername, this.state.id)
             .then(
                 response => this.setState({
                     description: response.data.description,
-                    inResponseTo: response.data.inResponseTo
+                    inResponseTo: response.data.inResponseTo,
+                    username: retrievedUsername
                 }
                 ))
 
@@ -118,8 +121,8 @@ class CommentComponent extends Component {
                     <Formik
                         initialValues={{ description, inResponseTo }}
                         onSubmit={this.onSubmit}
-                        validateOnBlur = {false}
-                        validateOnChange = {false}
+                        validateOnBlur={false}
+                        validateOnChange={false}
                         validate={this.validate}
                         enableReinitialize={true}
                     >
@@ -130,7 +133,7 @@ class CommentComponent extends Component {
                                         className="alert alert-warning" />
                                     <ErrorMessage name="inResponseTo" component="div"
                                         className="alert alert-warning" />
-                                    
+
 
                                     <fieldset className="form-group">
                                         <label>Description</label>
