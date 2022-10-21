@@ -14,7 +14,7 @@ COPY . ./
 ARG REACT_APP_API_BASE_URL
 ENV REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
 #Sam added 
-#RUN chmod +x node_modules/.bin/react-scripts
+RUN chmod a+x node_modules/.bin/react-scripts
 
 RUN npm run build
 

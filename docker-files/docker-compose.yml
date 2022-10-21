@@ -12,28 +12,28 @@ services:
       context: . # Use an image built from the specified dockerfile in the `polling-app-server` directory.
       dockerfile: ./Dockerfile.react
     container_name: mooc-app
-        depends_on:  
-          - api # This service depends on mysql. Start that first.
+      #depends_on:  
+      #- api # This service depends on mysql. Start that first.
     ports:
      - 8080:80 # Forward the exposed port 8080 on the container to port 8080 on the host machine
         #restart: unless-stopped
-  api:
-    build:
-      context: . 
-      dockerfile: ./Dockerfile.api
-    container_name: mooc-api 
-    ports:
-      - 80:80
-    depends_on: 
-      - mooc-db 
-  
+        #  api:
+        #    build:
+        #      context: . 
+        #      dockerfile: ./Dockerfile.api
+        #    container_name: api 
+        #    ports:
+        #      - 80:80
+        #    depends_on: 
+        #      - mooc-db 
+        #  
   mooc-db:
     container_name: mooc-db 
     restart: always 
     image: mysql:latest
     cap_add:
       - SYS_NICE # CAP_SYS_NICE 
-
+ 
     environment:
       MYSQL_DATABASE: mooc
       MYSQL_USER: 'mooc'
@@ -46,7 +46,7 @@ services:
     volumes:
       - ./my.cnf:/etc/mysql/my.cnf
       - /data/db:/var/lib/mysql
-            
+          
   # Database Service (Mysql)
   # db:
   #   image: mysql:5.7
