@@ -6,12 +6,20 @@ import AuthenticationService from './AuthenticationService'
 import CommentDataService from '../../api/comment/CommentDataService.js'
 import parse from 'html-react-parser';
 import CommentComponent from './CommentComponent'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+
+// toast.configure()
+
+
 
 class LessonComponent extends Component {
 
     constructor(props) {
         super(props)
         this.retrieveWelcomeMessage = this.retrieveWelcomeMessage.bind(this)
+        
         this.state = {
             welcomeMessage: '',
             addComment: Boolean(false),
@@ -20,27 +28,130 @@ class LessonComponent extends Component {
             description: "",
             urgencyLevel: "1",
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
-            username: "",
+            username: AuthenticationService.getLoggedInUserName(),
             successMessage: "",
             comments: [],
-            hasReplies: Boolean(false)
+            hasReplies: Boolean(false),
+            satisfactionLevel: "1",
+            satisfactionFeedback: ""
+
         }
+
+
+
         this.handleSuccessfulResponse = this.handleSuccessfulResponse.bind(this)
         this.handleError = this.handleError.bind(this)
         this.enableCommentForm = this.enableCommentForm.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
         this.validate = this.validate.bind(this)
         this.displayNestedReplies = this.displayNestedReplies.bind(this)
+        this.displayFeedbackForm = this.displayFeedbackForm.bind(this)
+        this.counterForFeedbackForm = this.counterForFeedbackForm.bind(this)
+
+       
+        
     }
+
 
     render() {
 
-        let { description, urgencyLevel } = this.state
+        let { description, urgencyLevel, satisfactionLevel, satisfactionFeedback } = this.state
         let currentTopLevelCommentID = 0
         let hasReplies = false
         let loggedInUserName = AuthenticationService.getLoggedInUserName()
+        // intervalID = setInterval(this.displayFeedbackForm, 15000)
+        // console.log("interval id: " + intervalID)
+        // this.counterForFeedbackForm()
+        // toast.configure()
+
+
+        // const notify = () => {
+        //     toast(customToast, toastOptions)
+
+        // }
+
+
+        // //For Toast notification
+        // let toastOptions = {
+        //     // onOpen: props => console.log(props.foo),
+        //     // onClose: props => console.log(props.foo),
+        //     // autoClose: 6000, 
+        //     type: toast.TYPE.INFO,
+        //     hideProgressBar: true,
+        //     position: toast.POSITION.TOP_CENTER,
+        //     pauseOnHover: true,
+        //     // progress: 0.2,
+        //     closeOnClick: false
+        //     // and so on ...
+        // };
+
+
+
+        // const customToast = ({ closeToast }) => {
+        //     return (
+        //         <>
+        //             <div>
+        //                 <Formik
+        //                     initialValues={{ satisfactionLevel, satisfactionFeedback }}
+        //                     onSubmit={this.onSubmit}
+        //                     validateOnBlur={false}
+        //                     validateOnChange={false}
+        //                     // validate={this.validate}
+        //                     enableReinitialize={true}
+        //                 >
+        //                     {
+        //                         (props) => (
+        //                             <Form>
+        //                                 <ErrorMessage name="satisfactionFeedback" component="div"
+        //                                     className="alert alert-warning" />
+        //                                 {/* <ErrorMessage name="inResponseTo" component="div"
+        //     className="alert alert-warning" /> */}
+
+        //                                 <fieldset className="form-group">
+        //                                     <label>Satisfaction with UI</label>
+        //                                     <Field
+        //                                         className="form-control"
+        //                                         as="select"
+        //                                         // onChange={this.onItemTypeDropdownSelected}
+        //                                         name="satisfactionLevel"
+        //                                     >
+        //                                         <option value="3">High</option>
+        //                                         <option value="2">Medium</option>
+        //                                         <option value="1">Low</option>
+        //                                     </Field>
+        //                                 </fieldset>
+
+
+        //                                 <fieldset className="form-group">
+        //                                     <label>Is there anywhere we can improve?</label>
+        //                                     <Field className="form-control" type="text" name="satisfactionFeedback" />
+        //                                 </fieldset>
+
+        //                                 <button className="btn btn-success" type="submit">Submit feedback</button>
+        //                             </Form>
+        //                         )
+        //                     }
+        //                 </Formik>
+        //             </div>
+        //         </>
+        //     )
+        // }
+
+
+
+
         return (
             <>
+                {/* 
+                <div className="App">
+                    <button onClick={notify}>Notify!</button>
+                </div> */}
+                {/* Ensure ToastContainer is used in component, remove 
+                toast.configure() 
+                https://stackoverflow.com/questions/49378743/toast-is-not-rendered-react-toastify-component
+                */}
+                <ToastContainer />
+
                 <h1>Lesson</h1>
                 <div className="container">
                     <img src={require('../../document.PNG')} height={700} width={600} align="center" />
@@ -447,10 +558,18 @@ className="alert alert-warning" /> */}
         })
 
 
+        
 
         console.log("componentDidMount")
         this.refreshComments();
-        console.log(this.state)
+        // console.log(this.state)
+
+
+        //If there are more than 1 feedback forms to be displayed, remove first one.
+        //Remove first interval.
+        this.counterForFeedbackForm()
+
+        
     }
 
     refreshComments() {
@@ -533,6 +652,9 @@ className="alert alert-warning" /> */}
                 })
             )
         }
+
+        //Providing feedback
+        toast.dismiss()
         console.log("in onSubmit")
     }
 
@@ -562,12 +684,6 @@ className="alert alert-warning" /> */}
         return errors
     }
 
-
-
-
-
-
-
     retrieveWelcomeMessage() {
         // HelloWorldService.executeHelloWorldService()
         // .then(response => this.handleSuccessfulResponse(response))
@@ -576,6 +692,124 @@ className="alert alert-warning" /> */}
         HelloWorldService.executeHelloWorldPathVariableService(this.props.params.name)
             .then(response => this.handleSuccessfulResponse(response))
             .catch(error => this.handleError(error))
+    }
+
+
+
+    counterForFeedbackForm() {
+        //    if(feedbackFormFlag === true){
+        //     feedbackFormFlag = false
+        //     console.log("test timer")
+        //    }
+
+        let intervalID = setTimeout(this.displayFeedbackForm, 3000);
+        console.log("interval ID: " + intervalID)
+        
+        // Need to clear first timeout becuase componentDidMount() runs twice,
+        // once when component first mounted and another when state is changed and rendering occurs for 2nd time
+        if (intervalID === 1){
+            clearTimeout(intervalID)
+        }
+        //    https://www.geeksforgeeks.org/how-to-embed-two-components-in-one-component/
+        //implement custom component that has Formik, drop down rating and comment box to submit
+        //Based on timeout ID gotten, then only display feedback form
+        //n2 find another way since ID will be assigned before everything loads,
+        //but can't let it render <30s before everything else is rendered,
+        //else not using timer's functionality
+        //    render(){
+        //     return(
+        //         <>
+        //         <h1>test</h1>
+        //         </>
+        //     )
+        //    }
+    }
+
+    displayFeedbackForm() {
+        //Create feedback form
+        //render popup?
+
+        //Need to figure out how to make it appear after certain time
+
+        let { satisfactionLevel, satisfactionFeedback } = this.state
+        const notify = () => {
+            toast(customToast, toastOptions)
+
+        }
+
+
+        //For Toast notification
+        let toastOptions = {
+            // onOpen: props => console.log(props.foo),
+            // onClose: props => console.log(props.foo),
+            // autoClose: 6000, 
+            type: toast.TYPE.INFO,
+            hideProgressBar: true,
+            position: toast.POSITION.TOP_CENTER,
+            pauseOnHover: true,
+            // progress: 0.2,
+            closeOnClick: false
+            // and so on ...
+        };
+
+        // <ToastContainer/>
+
+        const customToast = ({ closeToast }) => {
+            return (
+                <>
+                    <div>
+                        <Formik
+                            initialValues={{ satisfactionLevel, satisfactionFeedback }}
+                            onSubmit={this.onSubmit}
+                            validateOnBlur={false}
+                            validateOnChange={false}
+                            // validate={this.validate}
+                            enableReinitialize={true}
+                        >
+                            {
+                                (props) => (
+                                    <Form>
+                                        <ErrorMessage name="satisfactionFeedback" component="div"
+                                            className="alert alert-warning" />
+                                        {/* <ErrorMessage name="inResponseTo" component="div"
+            className="alert alert-warning" /> */}
+
+                                        <fieldset className="form-group">
+                                            <label>Satisfaction with UI</label>
+                                            <Field
+                                                className="form-control"
+                                                as="select"
+                                                // onChange={this.onItemTypeDropdownSelected}
+                                                name="satisfactionLevel"
+                                            >
+                                                <option value="3">High</option>
+                                                <option value="2">Medium</option>
+                                                <option value="1">Low</option>
+                                            </Field>
+                                        </fieldset>
+
+
+                                        <fieldset className="form-group">
+                                            <label>Is there anywhere we can improve?</label>
+                                            <Field className="form-control" type="text" name="satisfactionFeedback" />
+                                        </fieldset>
+
+                                        <button className="btn btn-success" type="submit">Submit feedback</button>
+                                    </Form>
+                                )
+                            }
+                        </Formik>
+                    </div>
+                </>
+            )
+        }
+
+        toast(customToast, toastOptions)
+
+
+        // this.notify
+        console.log("test timeout")
+
     }
 
     handleSuccessfulResponse(response) {
