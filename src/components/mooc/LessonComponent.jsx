@@ -19,7 +19,7 @@ class LessonComponent extends Component {
     constructor(props) {
         super(props)
         this.retrieveWelcomeMessage = this.retrieveWelcomeMessage.bind(this)
-        
+
         this.state = {
             welcomeMessage: '',
             addComment: Boolean(false),
@@ -33,8 +33,8 @@ class LessonComponent extends Component {
             comments: [],
             hasReplies: Boolean(false),
             satisfactionLevel: "1",
-            satisfactionFeedback: ""
-
+            satisfactionFeedback: "",
+            intervalIDs:[]
         }
 
 
@@ -48,14 +48,14 @@ class LessonComponent extends Component {
         this.displayFeedbackForm = this.displayFeedbackForm.bind(this)
         this.counterForFeedbackForm = this.counterForFeedbackForm.bind(this)
 
-       
-        
+
+
     }
 
 
     render() {
 
-        let { description, urgencyLevel, satisfactionLevel, satisfactionFeedback } = this.state
+        let { description, urgencyLevel } = this.state
         let currentTopLevelCommentID = 0
         let hasReplies = false
         let loggedInUserName = AuthenticationService.getLoggedInUserName()
@@ -65,77 +65,6 @@ class LessonComponent extends Component {
         // toast.configure()
 
 
-        // const notify = () => {
-        //     toast(customToast, toastOptions)
-
-        // }
-
-
-        // //For Toast notification
-        // let toastOptions = {
-        //     // onOpen: props => console.log(props.foo),
-        //     // onClose: props => console.log(props.foo),
-        //     // autoClose: 6000, 
-        //     type: toast.TYPE.INFO,
-        //     hideProgressBar: true,
-        //     position: toast.POSITION.TOP_CENTER,
-        //     pauseOnHover: true,
-        //     // progress: 0.2,
-        //     closeOnClick: false
-        //     // and so on ...
-        // };
-
-
-
-        // const customToast = ({ closeToast }) => {
-        //     return (
-        //         <>
-        //             <div>
-        //                 <Formik
-        //                     initialValues={{ satisfactionLevel, satisfactionFeedback }}
-        //                     onSubmit={this.onSubmit}
-        //                     validateOnBlur={false}
-        //                     validateOnChange={false}
-        //                     // validate={this.validate}
-        //                     enableReinitialize={true}
-        //                 >
-        //                     {
-        //                         (props) => (
-        //                             <Form>
-        //                                 <ErrorMessage name="satisfactionFeedback" component="div"
-        //                                     className="alert alert-warning" />
-        //                                 {/* <ErrorMessage name="inResponseTo" component="div"
-        //     className="alert alert-warning" /> */}
-
-        //                                 <fieldset className="form-group">
-        //                                     <label>Satisfaction with UI</label>
-        //                                     <Field
-        //                                         className="form-control"
-        //                                         as="select"
-        //                                         // onChange={this.onItemTypeDropdownSelected}
-        //                                         name="satisfactionLevel"
-        //                                     >
-        //                                         <option value="3">High</option>
-        //                                         <option value="2">Medium</option>
-        //                                         <option value="1">Low</option>
-        //                                     </Field>
-        //                                 </fieldset>
-
-
-        //                                 <fieldset className="form-group">
-        //                                     <label>Is there anywhere we can improve?</label>
-        //                                     <Field className="form-control" type="text" name="satisfactionFeedback" />
-        //                                 </fieldset>
-
-        //                                 <button className="btn btn-success" type="submit">Submit feedback</button>
-        //                             </Form>
-        //                         )
-        //                     }
-        //                 </Formik>
-        //             </div>
-        //         </>
-        //     )
-        // }
 
 
 
@@ -154,8 +83,13 @@ class LessonComponent extends Component {
 
                 <h1>Lesson</h1>
                 <div className="container">
-                    <img src={require('../../document.PNG')} height={700} width={600} align="center" />
-
+                    {/* <img src={require('../../document.PNG')} height={700} width={600} align="center" /> */}
+                    
+                        <iframe width="640" height="480" 
+                            src="https://www.youtube.com/embed/L3LMbpZIKhQ?list=PLB7540DEDD482705B" 
+                            title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                        </iframe>
+                        
                 </div>
                 <div className="container">
 
@@ -163,15 +97,14 @@ class LessonComponent extends Component {
                         this.enableCommentForm(null)} className="btn ">Comment on this video</button>
                 </div>
 
-                <div className="container" >
+                {/* <div className="container" >
                     <br></br>
-                </div>
+                </div> */}
 
 
                 {this.state.successMessage !== "" && (<div className="alert alert-success">
                     {this.state.successMessage}
                 </div>)}
-
 
 
                 {/* {Comment form to reply to lesson} */}
@@ -558,7 +491,7 @@ className="alert alert-warning" /> */}
         })
 
 
-        
+
 
         console.log("componentDidMount")
         this.refreshComments();
@@ -569,7 +502,7 @@ className="alert alert-warning" /> */}
         //Remove first interval.
         this.counterForFeedbackForm()
 
-        
+
     }
 
     refreshComments() {
@@ -701,15 +634,25 @@ className="alert alert-warning" /> */}
         //     feedbackFormFlag = false
         //     console.log("test timer")
         //    }
-
-        let intervalID = setTimeout(this.displayFeedbackForm, 3000);
-        console.log("interval ID: " + intervalID)
         
+        
+        //counterForFeedbackForm() runs >1 time, remove previous timers for feedback form, only leave 1
+        for (var i =0; i<this.state.intervalIDs.length; i++){
+            console.log("removing inervalID")
+            clearInterval(this.state.intervalIDs.pop());
+        }
+
+        // let intervalID = setTimeout(this.displayFeedbackForm, 3000);
+        //Store intervalID for removal if counterForFeedbackForm() called again
+        this.state.intervalIDs.push(setTimeout(this.displayFeedbackForm, 3000));
+        // console.log("interval ID: " + intervalID)
+
+
         // Need to clear first timeout becuase componentDidMount() runs twice,
         // once when component first mounted and another when state is changed and rendering occurs for 2nd time
-        if (intervalID === 1){
-            clearTimeout(intervalID)
-        }
+        // if (intervalID === 1) {
+        //     clearTimeout(intervalID)
+        // }
         //    https://www.geeksforgeeks.org/how-to-embed-two-components-in-one-component/
         //implement custom component that has Formik, drop down rating and comment box to submit
         //Based on timeout ID gotten, then only display feedback form
