@@ -67,7 +67,8 @@ class ListCommentsComponent extends Component{
     }
     addCommentClicked(){
         console.log("create ") 
-        this.props.navigate('/comments/-1')
+        let id = -1
+        this.props.navigate(`/comments/${id}`)
       
     }
 

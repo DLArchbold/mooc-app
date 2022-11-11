@@ -25,18 +25,20 @@ class CommentComponent extends Component {
         console.log("in onSubmit")
         
 
-        console.log("state.id" + this.state.id);
-        if (this.state.id === -1) {
-            console.log("in create")
+        console.log("state.id " + this.state.id);
+        if (this.state.id == -1) {
+            console.log("in create " + AuthenticationService.getLoggedInUserName())
+
             CommentDataService.createComment(this.state.username, {
                 //Use state values for those which are carried over from ListComments
                 //Use values. if obtained from Formik.
                 //
-                id: this.state.id,
+                // id: this.state.id,
                 description: values.description,
+                urgencyLevel: 3,
                 inResponseTo: values.inResponseTo,
                 targetDate: this.state.targetDate,
-                username: this.state.username
+                username: AuthenticationService.getLoggedInUserName()
             }).then(
                 //When successfully added redirect user to list all Comments
                 () => {
@@ -54,7 +56,7 @@ class CommentComponent extends Component {
                 description: values.description,
                 inResponseTo: values.inResponseTo,
                 targetDate: this.state.targetDate,
-                username: this.state.username
+                username: AuthenticationService.getLoggedInUserName
             }).then(
                 //When successfully update redirect user to list all Comments
                 () => {
@@ -67,9 +69,17 @@ class CommentComponent extends Component {
     }
 
     componentDidMount() {
-        console.log("in componentDidMount")
+
+        this.setState({
+            username: AuthenticationService.getLoggedInUserName()
+        })
+        // console.log("in componentDidMount")
         //If it's adding a Comment then no need retrieve
-        if (this.state.id === -1) {
+        if (this.state.id == -1) {
+            //remember to use this.props.navigate(`/comments/${id}`) when navigating from elsewhere since 
+            //ID will be in this.state will be treated as string "-1" instead of integer -1. Use only ==
+            //instead of === operator.
+            // console.log("in CommentComponent.componentDidMount(), State id is " + this.state.id  )
             return
         }
 

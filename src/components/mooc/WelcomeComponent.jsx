@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link} from 'react-router-dom'
 import HelloWorldService from "../../api/comment/HelloWorldService.js"
+import AuthenticationService from './AuthenticationService.js'
 
 
 class WelcomeComponent extends Component{
@@ -20,7 +21,7 @@ class WelcomeComponent extends Component{
             <>
                 <h1>Welcome!</h1>
                 <div className="container">
-                Welcome {this.props.params.name}. 
+                Welcome {AuthenticationService.getLoggedInUserName()}. 
                 View all instructor comments <Link to="/comments">here</Link>.
                 </div>
 

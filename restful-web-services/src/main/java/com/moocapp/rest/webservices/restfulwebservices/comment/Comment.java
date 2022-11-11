@@ -3,8 +3,27 @@ package com.moocapp.rest.webservices.restfulwebservices.comment;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+
+
+@Entity
+@EntityScan
 public class Comment {
+	
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GenericGenerator(name="startfromlargestid" , strategy="increment")
+	@GeneratedValue(generator="startfromlargestid")
 	private long id;
+	
 	private String description;
 	private String urgencyLevel;
 	private long inResponseTo;

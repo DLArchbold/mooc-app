@@ -506,11 +506,12 @@ className="alert alert-warning" /> */}
     }
 
     refreshComments() {
+        console.log("in refresh comments x")
         let username = AuthenticationService.getLoggedInUserName()
         CommentDataService.retrieveAllComments(username)
             .then(
                 response => {
-                    // console.log(response)
+                    console.log("response " + response.data)
                     this.setState({ comments: response.data })
                 }
 

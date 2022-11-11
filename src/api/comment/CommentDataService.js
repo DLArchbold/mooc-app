@@ -23,7 +23,7 @@ class CommentDataService{
         return axios.put(`http://localhost:8080/users/${name}/comments/${id}`, comment);
     }
 
-    createComment(name,  comment){
+     createComment(name,  comment){
 
         return axios.post(`http://localhost:8080/users/${name}/comments`, comment);
     }
