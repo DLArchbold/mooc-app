@@ -87,7 +87,7 @@ class LessonComponent extends Component {
                     
                         <iframe width="640" height="480" 
                             src="https://www.youtube.com/embed/L3LMbpZIKhQ?list=PLB7540DEDD482705B" 
-                            title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                            title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
                         </iframe>
                         
                 </div>
@@ -513,6 +513,7 @@ className="alert alert-warning" /> */}
                 response => {
                     console.log("response " + response.data)
                     this.setState({ comments: response.data })
+
                 }
 
             )
