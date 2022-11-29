@@ -9,13 +9,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 
 @SpringBootApplication
-public class RestfulWebServicesApplication {
+public class RestfulWebServicesApplication extends SpringBootServletInitializer {
 
 	
-//	@Override
-//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//		return application.sources(RestfulWebServicesApplication.class);
-//	}
+	@Override	
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(RestfulWebServicesApplication.class);
+	}
 	
 	
 

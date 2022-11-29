@@ -35,7 +35,8 @@ public class Comment {
 		
 	}
 	
-	public Comment(long id, String description, String urgencyLevel, long inResponseTo, Date targetDate, String username) {
+	public Comment(long id, String description, String urgencyLevel, 
+			long inResponseTo, Date targetDate, String username) {
 		super();
 		this.id = id;
 		this.description = description;
