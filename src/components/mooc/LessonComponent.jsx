@@ -34,7 +34,8 @@ class LessonComponent extends Component {
             hasReplies: Boolean(false),
             satisfactionLevel: "1",
             satisfactionFeedback: "",
-            intervalIDs:[]
+            intervalIDs: [],
+            currentTopLevelCommentId: 0
         }
 
 
@@ -47,6 +48,8 @@ class LessonComponent extends Component {
         this.displayNestedReplies = this.displayNestedReplies.bind(this)
         this.displayFeedbackForm = this.displayFeedbackForm.bind(this)
         this.counterForFeedbackForm = this.counterForFeedbackForm.bind(this)
+        this.upvote = this.upvote.bind(this)
+        this.setCurrentTopLevelCommentId = this.setCurrentTopLevelCommentId.bind(this)
 
 
 
@@ -84,12 +87,12 @@ class LessonComponent extends Component {
                 <h1>Lesson</h1>
                 <div className="container">
                     {/* <img src={require('../../document.PNG')} height={700} width={600} align="center" /> */}
-                    
-                        <iframe width="640" height="480" 
-                            src="https://www.youtube.com/embed/L3LMbpZIKhQ?list=PLB7540DEDD482705B" 
-                            title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
-                        </iframe>
-                        
+
+                    <iframe width="640" height="480"
+                        src="https://www.youtube.com/embed/L3LMbpZIKhQ?list=PLB7540DEDD482705B"
+                        title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
+                    </iframe>
+
                 </div>
                 <div className="container">
 
@@ -167,20 +170,42 @@ class LessonComponent extends Component {
                         this.state.comments.map(
                             comment =>
                                 <>
+
                                     {/* Only display comments for lesson for top level  */}
                                     {comment.inResponseTo === 0 &&
-                                        (<div className="card-body" align="center" key={comment.id}>
+                                        (<div className="card-body" align="left" key={comment.id} >
                                             {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
                                             <br></br><br></br><br></br>
-                                            {(currentTopLevelCommentID = comment.id)}
-                                            <h5 className="card-title"> {comment.username} - (comment id: {comment.id})</h5>
+                                            {/* {currentTopLevelCommentID =comment.id} */}
+                                            <span>
+                                                {/* {(() => {
+                                                    this.setCurrentTopLevelCommentId(comment.id);
+                                                })()} */}
+                                                {
+                                                    // () => {
+                                                    //     currentTopLevelCommentID = comment.id
+                                                    //     console.log("setting comment id")
+                                                    //     this.setState({
+                                                    //         currentTopLevelCommentId: commentId
+                                                    //     }
+                                                    //     )
+                                                    // }
+                                                    
+                                                }
+                                            </span>
+                                            <h5 className="card-title" align="left"> {comment.username} - (comment id: {comment.id})</h5>
 
-                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p className="card-text" style={{ color: "DarkRed" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p className="card-text" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p className="card-text" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                                            <p className="card-text">{comment.description}</p>
-                                            <button className="btn btn-primary btn-sm" onClick={() =>
-                                                this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p className="card-text" align="left" style={{ color: "DarkRed" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p className="card-text" align="left" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                                            {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p className="card-text" align="left" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                                            <p className="card-text" align="left">{comment.description}</p>
+                                            <button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() => this.enableCommentForm(comment.id)}>
+                                                Reply to above comment
+                                            </button>
+
+                                            <button style={{ display: "inline-block", marginLeft: '1rem' }} className="btn btn-primary btn-sm" onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
+                                                ↑ Votes: {comment.votes}
+                                            </button>
                                             <div>
                                                 <br></br>
                                             </div>
@@ -257,7 +282,8 @@ class LessonComponent extends Component {
 
                                     {/*Displaying only 2nd level comments that reply to top-level comments */}
                                     {(() => {
-                                        if (comment.id == currentTopLevelCommentID) {
+                                        // comment.id == currentTopLevelCommentID
+                                        if (comment.inResponseTo==0) {
                                             return this.displayNestedReplies(comment.id, 10);
                                         }
 
@@ -347,7 +373,19 @@ class LessonComponent extends Component {
         )
     }
 
+    setCurrentTopLevelCommentId(commentId) {
+        this.setState({
+            currentTopLevelCommentId: commentId
+        }
+        )
+
+    }
+
+    
+
     displayNestedReplies(commentIDToBeRepliedTo, spacing) {
+
+
         //commentIDToBeRepliedTo
 
         var comments = this.state.comments
@@ -355,14 +393,14 @@ class LessonComponent extends Component {
 
 
         var commentReplies = []
-        console.log("commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
+        // console.log("commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
         for (var i = 0; i < comments.length; i++) {
             var singleComment = comments[i]
 
             if (singleComment.inResponseTo == commentIDToBeRepliedTo) {
 
                 commentReplies.push(singleComment)
-                console.log("singleComment.id: " + singleComment.id)
+                // console.log("singleComment.id: " + singleComment.id)
             }
         }
 
@@ -373,20 +411,24 @@ class LessonComponent extends Component {
             return (commentReplies.map(comment =>
 
 
-                <div style={{ marginLeft: spacing + 'rem' }}>
+                <div align="left" className="card-body" style={{ marginLeft: spacing + 'rem' }}>
                     {/* initially style = margin-right: 1rem 
                 https://getbootstrap.com/docs/4.0/layout/utilities-for-layout/*/}
-                    <h5 className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
-                    {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p className="card-text" style={{ color: "Crimson" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                    {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p className="card-text" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                    {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p className="card-text" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
-                    <p className="card-text">{comment.description}</p>
-                    <button className="btn btn-primary btn-sm" onClick={() =>
-                        this.enableCommentForm(comment.id)}>Reply to above comment</button>
+                    <h5 align="left" className="card-title"> {comment.username} - (comment id: {comment.id}) replied to  comment id: {commentIDToBeRepliedTo} </h5>
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "3" && (<p align="left" className="card-text" style={{ color: "Crimson" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "2" && (<p align="left" className="card-text" style={{ color: "DarkOrange" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    {comment.urgencyLevel != "" && comment.urgencyLevel == "1" && (<p align="left" className="card-text" style={{ color: "Chartreuse" }}>Urgency level: {comment.urgencyLevel}</p>)}
+                    <p align="left" className="card-text">{comment.description}</p>
+                    <button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() =>
+                        this.enableCommentForm(comment.id)}>Reply to above comment
+                    </button>
 
-                    {(() => {
-                        let username = comment.username
-                    })()}
+
+                    <button style={{ display: "inline-block", marginLeft: '1rem' }} className="btn btn-primary btn-sm" onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
+                        ↑ Votes: {comment.votes}
+                    </button>
+
+
 
                     {(this.state.addCommentReply === true && this.state.inResponseTo == comment.id) &&
                         (<div className="container">
@@ -501,10 +543,30 @@ className="alert alert-warning" /> */}
         //If there are more than 1 feedback forms to be displayed, remove first one.
         //Remove first interval.
         this.counterForFeedbackForm()
-
+        
 
     }
+    upvote(commentUsername, commentId, commentDescription, commentUrgencyLevel, commentInResponseTo, commentVotes) {
+        CommentDataService.updateComment(commentUsername, commentId, {
+            //Use state values for those which are carried over from ListComments
+            //Use values. if obtained from Formik.
+            //
+            id: commentId,
+            description: commentDescription,
+            urgencyLevel: commentUrgencyLevel,
+            inResponseTo: commentInResponseTo,
+            targetDate: this.state.targetDate,
+            username: commentUsername,
+            votes: commentVotes
 
+        }).then(
+           
+            // console.log("successfully updates votes of a comment")
+            // this.refreshComments()
+            this.refreshComments()
+        )
+        
+    }
     refreshComments() {
         console.log("in refresh comments x")
         let username = AuthenticationService.getLoggedInUserName()
@@ -525,16 +587,27 @@ className="alert alert-warning" /> */}
     onSubmit(values) {
         console.log("Urgency level: " + values.urgencyLevel)
         let username = AuthenticationService.getLoggedInUserName()
+        let desc = new String(values.description);
+        // let test = desc.replaceAll("’", "\\’");
+        // test =  test.replaceAll("'", "\\'");
+        // console.log("this is description " + test)
         // console.log("state.id" + this.state.id);
+
+
         if (this.state.addComment === true && this.state.addCommentReply === false) {
             console.log("username: " + username)
             console.log("replying to lesson")
+
+            //Escape single quote characters to prevent gibberish from being inserted into mysql
+
+
+
             CommentDataService.createComment(username, {
                 //Use state values for those which are carried over from ListComments
                 //Use values. if obtained from Formik.
                 //
                 id: -1,
-                description: values.description,
+                description: desc,
                 urgencyLevel: values.urgencyLevel,
                 inResponseTo: 0, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
                 targetDate: this.state.targetDate,
@@ -565,7 +638,7 @@ className="alert alert-warning" /> */}
                 //Use values. if obtained from Formik.
                 //
                 id: -1,
-                description: values.description,
+                description: desc,
                 urgencyLevel: values.urgencyLevel,
                 inResponseTo: this.state.inResponseTo, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
                 targetDate: this.state.targetDate,
@@ -636,10 +709,10 @@ className="alert alert-warning" /> */}
         //     feedbackFormFlag = false
         //     console.log("test timer")
         //    }
-        
-        
+
+
         //counterForFeedbackForm() runs >1 time, remove previous timers for feedback form, only leave 1
-        for (var i =0; i<this.state.intervalIDs.length; i++){
+        for (var i = 0; i < this.state.intervalIDs.length; i++) {
             console.log("removing inervalID")
             clearInterval(this.state.intervalIDs.pop());
         }

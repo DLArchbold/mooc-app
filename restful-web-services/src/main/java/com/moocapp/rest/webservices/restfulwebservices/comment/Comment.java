@@ -3,40 +3,43 @@ package com.moocapp.rest.webservices.restfulwebservices.comment;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-
-
 @Entity
 @EntityScan
 public class Comment {
-	
+
 //	@Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@GenericGenerator(name="startfromlargestid" , strategy="increment")
-	@GeneratedValue(generator="startfromlargestid")
+	@GenericGenerator(name = "startfromlargestid", strategy = "increment")
+	@GeneratedValue(generator = "startfromlargestid")
 	private long id;
-	
+
+	@Lob
+	@Column(length=100000)
 	private String description;
+	
 	private String urgencyLevel;
 	private long inResponseTo;
 	private Date targetDate;
 	private String username;
+	private long votes;
 
-	
 	protected Comment() {
-		
+
 	}
-	
-	public Comment(long id, String description, String urgencyLevel, 
-			long inResponseTo, Date targetDate, String username) {
+
+	public Comment(long id, String description, String urgencyLevel, long inResponseTo, Date targetDate,
+			String username, long votes) {
 		super();
 		this.id = id;
 		this.description = description;
@@ -44,6 +47,23 @@ public class Comment {
 		this.inResponseTo = inResponseTo;
 		this.targetDate = targetDate;
 		this.username = username;
+		this.votes = votes;
+	}
+
+	/**
+	 * @return the votes
+	 */
+	public long getVotes() {
+		return votes;
+	}
+
+		
+
+	/**
+	 * @param votes the votes to set
+	 */
+	public void setVotes(long votes) {
+		this.votes = votes;
 	}
 
 	public long getId() {
@@ -111,6 +131,4 @@ public class Comment {
 		return id == other.id;
 	}
 
-	
-	
 }

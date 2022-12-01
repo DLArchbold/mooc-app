@@ -80,6 +80,10 @@ public class CommentResource     {
 		
 //		comment.setId(-1L);
 		
+		
+//		String a =  comment.getDescription().replaceAll("/'/g", "''");
+//		System.out.println("replace: " + a);
+		
 		Comment createdComment= commentRepository.save(comment);
 		
 		
