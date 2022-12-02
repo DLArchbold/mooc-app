@@ -177,6 +177,7 @@ class LessonComponent extends Component {
                                     {comment.inResponseTo === 0 &&
                                         (<div className="card-body" align="left" key={comment.id} >
                                             {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
+                                            <hr></hr>
                                             <br></br><br></br><br></br>
                                             {/* {currentTopLevelCommentID =comment.id} */}
                                             <span>
@@ -369,6 +370,18 @@ class LessonComponent extends Component {
 
 
                     }
+                </div>
+                <div className="card-body" align="left"  >
+                    {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
+                    <br></br><br></br><br></br>
+                    {/* {currentTopLevelCommentID =comment.id} */}
+                    <hr></hr>
+                    
+                    <h3 align="left">Response times for urgency level</h3>
+                    <div><span align="left" className="card-text" style={{ color: "Crimson" }}>High </span> <span>: within 24 hours</span></div>
+                    <div><span align="left" className="card-text" style={{ color: "DarkOrange" }}>Medium </span> <span>: within 3 days</span></div>
+                    <div><span align="left" className="card-text" style={{ color: "Chartreuse" }}>Low </span> <span>: within 1 week</span></div>
+                
                 </div>
             </>
 

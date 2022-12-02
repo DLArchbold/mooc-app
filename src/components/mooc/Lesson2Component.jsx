@@ -37,7 +37,7 @@ class Lesson2Component extends Component {
             intervalIDs: [],
             currentTopLevelCommentId: 0,
             lessonId: 2,
-            submittedFeedback:false
+            submittedFeedback: false
         }
 
 
@@ -53,7 +53,6 @@ class Lesson2Component extends Component {
         this.upvote = this.upvote.bind(this)
         this.setCurrentTopLevelCommentId = this.setCurrentTopLevelCommentId.bind(this)
         this.onSubmitFeedback = this.onSubmitFeedback.bind(this)
-
 
     }
 
@@ -166,6 +165,7 @@ class Lesson2Component extends Component {
                 )}
 
                 <div>
+                    
                     {/* Unpack each comment on this video to a div card  */}
 
                     {
@@ -176,6 +176,7 @@ class Lesson2Component extends Component {
                                     {/* Only display comments for lesson for top level  */}
                                     {comment.inResponseTo === 0 &&
                                         (<div className="card-body" align="left" key={comment.id} >
+                                             <hr></hr>
                                             {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
                                             <br></br><br></br><br></br>
                                             {/* {currentTopLevelCommentID =comment.id} */}
@@ -192,7 +193,7 @@ class Lesson2Component extends Component {
                                                     //     }
                                                     //     )
                                                     // }
-                                                    
+
                                                 }
                                             </span>
                                             <h5 className="card-title" align="left"> {comment.username} - (comment id: {comment.id})</h5>
@@ -285,7 +286,7 @@ class Lesson2Component extends Component {
                                     {/*Displaying only 2nd level comments that reply to top-level comments */}
                                     {(() => {
                                         // comment.id == currentTopLevelCommentID
-                                        if (comment.inResponseTo==0) {
+                                        if (comment.inResponseTo == 0) {
                                             return this.displayNestedReplies(comment.id, 10);
                                         }
 
@@ -370,6 +371,20 @@ class Lesson2Component extends Component {
 
                     }
                 </div>
+
+                <div className="card-body" align="left"  >
+                    {/* {console.log("inResponseTo: " + comment.inResponseTo)} */}
+                    <br></br><br></br><br></br>
+                    {/* {currentTopLevelCommentID =comment.id} */}
+                    <hr></hr>
+                    
+                    <h3 align="left">Response times for urgency level</h3>
+                    <div><span align="left" className="card-text" style={{ color: "Crimson" }}>High </span> <span>: within 24 hours</span></div>
+                    <div><span align="left" className="card-text" style={{ color: "DarkOrange" }}>Medium </span> <span>: within 3 days</span></div>
+                    <div><span align="left" className="card-text" style={{ color: "Chartreuse" }}>Low </span> <span>: within 1 week</span></div>
+                
+                </div>
+
             </>
 
         )
@@ -383,7 +398,7 @@ class Lesson2Component extends Component {
 
     }
 
-    
+
 
     displayNestedReplies(commentIDToBeRepliedTo, spacing) {
 
@@ -545,7 +560,8 @@ className="alert alert-warning" /> */}
         //If there are more than 1 feedback forms to be displayed, remove first one.
         //Remove first interval.
         this.counterForFeedbackForm()
-        
+
+
 
     }
     upvote(commentUsername, commentId, commentDescription, commentUrgencyLevel, commentInResponseTo, commentVotes) {
@@ -562,7 +578,7 @@ className="alert alert-warning" /> */}
             votes: commentVotes
 
         }).then(
-           
+
             // console.log("successfully updates votes of a comment")
             // this.refreshComments()
             this.refreshComments()
@@ -570,7 +586,7 @@ className="alert alert-warning" /> */}
         this.refreshComments()
     }
 
-    
+
     refreshComments() {
         console.log("in refresh comments x")
         let username = AuthenticationService.getLoggedInUserName()
@@ -719,18 +735,18 @@ className="alert alert-warning" /> */}
         for (var i = 0; i < this.state.intervalIDs.length; i++) {
             console.log("removing intervalID")
             clearInterval(this.state.intervalIDs.pop());
-            
+
         }
 
         // let intervalID = setTimeout(this.displayFeedbackForm, 3000);
         //Store intervalID for removal if counterForFeedbackForm() called again
-        if(this.state.submittedFeedback === false){
+        if (this.state.submittedFeedback === false) {
             this.setState({
-                submittedFeedback:true
+                submittedFeedback: true
             })
-            this.state.intervalIDs.push(setTimeout(this.displayFeedbackForm, 3000));    
+            this.state.intervalIDs.push(setTimeout(this.displayFeedbackForm, 3000));
         }
-        
+
         // console.log("interval ID: " + intervalID)
 
 
@@ -842,9 +858,9 @@ className="alert alert-warning" /> */}
 
     }
 
-    
 
-    onSubmitFeedback(values){
+
+    onSubmitFeedback(values) {
         toast.dismiss()
         this.forceUpdate()
         this.componentDidMount()
@@ -859,13 +875,13 @@ className="alert alert-warning" /> */}
             feedbackRating: values.satisfactionLevel,
             feedbackComment: values.satisfactionFeedback,
             lessonId: this.state.lessonId
-          
+
         }).then(
             //When successfully replied to comment
             () => {
                 // this.props.navigate("/comments")
                 this.forceUpdate()
-                
+
                 console.log("Adding feedback success")
                 this.setState({
                     successMessage: "Adding feedback success",
@@ -874,12 +890,12 @@ className="alert alert-warning" /> */}
                 for (var i = 0; i < this.state.intervalIDs.length; i++) {
                     console.log("removing intervalID")
                     clearInterval(this.state.intervalIDs.pop());
-                    
+
                 }
                 toast.dismiss()
                 this.componentDidMount()
             }
-            
+
 
 
         ).catch(
@@ -887,8 +903,10 @@ className="alert alert-warning" /> */}
                 successMessage: error.response.data.message
             })
         )
-       toast.dismiss()
+        toast.dismiss()
     }
+
+
 
     handleSuccessfulResponse(response) {
         console.log(response)
