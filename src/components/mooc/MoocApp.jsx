@@ -13,7 +13,8 @@ import LogoutComponent from './LogoutComponent.jsx'
 import WelcomeComponent from './WelcomeComponent.jsx'
 import CommentComponent from './CommentComponent'
 import LessonComponent from './LessonComponent.jsx'
-
+import ListFeedbackComponent from './ListFeedbackComponent.jsx'
+import Lesson2Component from './Lesson2Component.jsx'
 
 class MoocApp extends Component {
 
@@ -25,6 +26,7 @@ class MoocApp extends Component {
         const WelcomeComponentWithParams = withParams(WelcomeComponent);
         const HeaderComponentWithNavigation = withNavigation(HeaderComponent);
         const ListCommentsComponentWithNavigation = withNavigation(ListCommentsComponent);
+        const ListFeedbackComponentWithNavigation = withNavigation(ListFeedbackComponent);
         const CommentComponentWithParamsAndNavigation = withParams(withNavigation(CommentComponent));
 
 
@@ -49,6 +51,11 @@ class MoocApp extends Component {
                                 <ListCommentsComponentWithNavigation/>
                             </AuthenticatedRoute>
                         } />
+                        <Route path="/feedbacks" element={
+                            <AuthenticatedRoute>
+                                <ListFeedbackComponentWithNavigation/>
+                            </AuthenticatedRoute>
+                        } />
                         <Route path="/logout" element={
                             <AuthenticatedRoute>
                                 <LogoutComponent />
@@ -62,6 +69,11 @@ class MoocApp extends Component {
                         <Route path="/lesson" element = {
                             <AuthenticatedRoute>
                                 <LessonComponent/>
+                            </AuthenticatedRoute>
+                        }/>
+                        <Route path="/lesson-2" element = {
+                            <AuthenticatedRoute>
+                                <Lesson2Component/>
                             </AuthenticatedRoute>
                         }/>
                         <Route path="*" element={<ErrorComponent />} />

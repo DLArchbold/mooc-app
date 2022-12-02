@@ -8,7 +8,7 @@ import parse from 'html-react-parser';
 import CommentComponent from './CommentComponent'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-
+import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
 
 // toast.configure()
 
@@ -35,7 +35,9 @@ class LessonComponent extends Component {
             satisfactionLevel: "1",
             satisfactionFeedback: "",
             intervalIDs: [],
-            currentTopLevelCommentId: 0
+            currentTopLevelCommentId: 0,
+            lessonId: 1,
+            submittedFeedback:false
         }
 
 
@@ -50,7 +52,7 @@ class LessonComponent extends Component {
         this.counterForFeedbackForm = this.counterForFeedbackForm.bind(this)
         this.upvote = this.upvote.bind(this)
         this.setCurrentTopLevelCommentId = this.setCurrentTopLevelCommentId.bind(this)
-
+        this.onSubmitFeedback = this.onSubmitFeedback.bind(this)
 
 
     }
@@ -565,8 +567,10 @@ className="alert alert-warning" /> */}
             // this.refreshComments()
             this.refreshComments()
         )
-        
+        this.refreshComments()
     }
+
+    
     refreshComments() {
         console.log("in refresh comments x")
         let username = AuthenticationService.getLoggedInUserName()
@@ -713,13 +717,20 @@ className="alert alert-warning" /> */}
 
         //counterForFeedbackForm() runs >1 time, remove previous timers for feedback form, only leave 1
         for (var i = 0; i < this.state.intervalIDs.length; i++) {
-            console.log("removing inervalID")
+            console.log("removing intervalID")
             clearInterval(this.state.intervalIDs.pop());
+            
         }
 
         // let intervalID = setTimeout(this.displayFeedbackForm, 3000);
         //Store intervalID for removal if counterForFeedbackForm() called again
-        this.state.intervalIDs.push(setTimeout(this.displayFeedbackForm, 3000));
+        if(this.state.submittedFeedback === false){
+            this.setState({
+                submittedFeedback:true
+            })
+            this.state.intervalIDs.push(setTimeout(this.displayFeedbackForm, 3000));    
+        }
+        
         // console.log("interval ID: " + intervalID)
 
 
@@ -750,10 +761,10 @@ className="alert alert-warning" /> */}
         //Need to figure out how to make it appear after certain time
 
         let { satisfactionLevel, satisfactionFeedback } = this.state
-        const notify = () => {
-            toast(customToast, toastOptions)
+        // const notify = () => {
+        //     toast(customToast, toastOptions)
 
-        }
+        // }
 
 
         //For Toast notification
@@ -767,6 +778,7 @@ className="alert alert-warning" /> */}
             pauseOnHover: true,
             // progress: 0.2,
             closeOnClick: false
+            // onOpen: this.setSubmittedFeedbackToTrue()
             // and so on ...
         };
 
@@ -778,7 +790,7 @@ className="alert alert-warning" /> */}
                     <div>
                         <Formik
                             initialValues={{ satisfactionLevel, satisfactionFeedback }}
-                            onSubmit={this.onSubmit}
+                            onSubmit={this.onSubmitFeedback}
                             validateOnBlur={false}
                             validateOnChange={false}
                             // validate={this.validate}
@@ -828,6 +840,54 @@ className="alert alert-warning" /> */}
         // this.notify
         console.log("test timeout")
 
+    }
+
+    
+
+    onSubmitFeedback(values){
+        toast.dismiss()
+        this.forceUpdate()
+        this.componentDidMount()
+
+
+        console.log(values.satisfactionLevel + "x" + values.satisfactionFeedback)
+        FeedbackDataService.createFeedback(this.state.lessonId, {
+            //Use state values for those which are carried over from ListComments
+            //Use values. if obtained from Formik.
+            //
+            id: -1,
+            feedbackRating: values.satisfactionLevel,
+            feedbackComment: values.satisfactionFeedback,
+            lessonId: this.state.lessonId
+          
+        }).then(
+            //When successfully replied to comment
+            () => {
+                // this.props.navigate("/comments")
+                this.forceUpdate()
+                
+                console.log("Adding feedback success")
+                this.setState({
+                    successMessage: "Adding feedback success",
+                    submittedFeedback: true
+                })
+                for (var i = 0; i < this.state.intervalIDs.length; i++) {
+                    console.log("removing intervalID")
+                    clearInterval(this.state.intervalIDs.pop());
+                    
+                }
+                toast.dismiss()
+                this.componentDidMount()
+            }
+            
+
+
+        ).catch(
+            error => this.setState({
+                successMessage: error.response.data.message
+            })
+        )
+       toast.dismiss()
     }
 
     handleSuccessfulResponse(response) {
