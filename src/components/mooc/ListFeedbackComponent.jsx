@@ -214,7 +214,7 @@ className="alert alert-warning" /> */}
                                             <td>{feedback.feedbackRating}</td>
                                             <td>{feedback.feedbackComment}</td>
                                             {/* <td><button className = "btn btn-success" onClick={()=> this.updateCommentClicked(comment.id)}>Update</button></td> */}
-                                            <td><button className="btn btn-warning" onClick={() => this.deleteCommentClicked(feedback.id)}>Delete</button></td>
+                                            <td><button className="btn btn-warning" onClick={() => this.deleteFeedbackClicked(feedback.id)}>Delete</button></td>
                                         </tr>
                                 )
                             }

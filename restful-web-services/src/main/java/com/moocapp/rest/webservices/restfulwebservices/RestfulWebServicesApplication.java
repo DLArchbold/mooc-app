@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,10 +14,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class RestfulWebServicesApplication extends SpringBootServletInitializer {
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(RestfulWebServicesApplication.class);
-	}
+//	@Override
+//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//		return application.sources(RestfulWebServicesApplication.class);
+//	}
 
 	// AWS
 	@Bean
@@ -29,6 +31,7 @@ public class RestfulWebServicesApplication extends SpringBootServletInitializer 
 	}
 
 	public static void main(String[] args) {
+//		ApplicationContext context = new AnnotationConfigApplicationContext( RestfulWebServicesApplication.class);
 		SpringApplication.run(RestfulWebServicesApplication.class, args);
 	}
 
