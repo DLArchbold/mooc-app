@@ -722,12 +722,6 @@ className="alert alert-warning" /> */}
 
 
     counterForFeedbackForm() {
-        //    if(feedbackFormFlag === true){
-        //     feedbackFormFlag = false
-        //     console.log("test timer")
-        //    }
-
-
         //counterForFeedbackForm() runs >1 time, remove previous timers for feedback form, only leave 1
         for (var i = 0; i < this.state.intervalIDs.length; i++) {
             console.log("removing intervalID")
@@ -848,8 +842,6 @@ className="alert alert-warning" /> */}
         }
 
         toast(customToast, toastOptions)
-
-
         // this.notify
         console.log("test timeout")
 
@@ -865,9 +857,6 @@ className="alert alert-warning" /> */}
 
         console.log(values.satisfactionLevel + "x" + values.satisfactionFeedback)
         FeedbackDataService.createFeedback(this.state.lessonId, {
-            //Use state values for those which are carried over from ListComments
-            //Use values. if obtained from Formik.
-            //
             id: -1,
             feedbackRating: values.satisfactionLevel,
             feedbackComment: values.satisfactionFeedback,
@@ -892,8 +881,6 @@ className="alert alert-warning" /> */}
                 toast.dismiss()
                 this.componentDidMount()
             }
-            
-
 
         ).catch(
             error => this.setState({

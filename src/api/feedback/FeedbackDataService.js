@@ -1,8 +1,7 @@
-import { API_URL } from '../../Constants'
+
 
 import axios from "axios";
-
-
+import { API_URL } from '../../Constants'
 class FeedbackDataService{
 
     retrieveAllFeedback(){
@@ -24,10 +23,6 @@ class FeedbackDataService{
 
         return axios.post(`${API_URL}/${lessonId}/feedback`, feedback);
     }
-
-    
-
-
 }
 
 export default new FeedbackDataService()

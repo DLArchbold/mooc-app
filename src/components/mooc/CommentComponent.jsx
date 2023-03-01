@@ -31,9 +31,7 @@ class CommentComponent extends Component {
 
             CommentDataService.createComment(this.state.username, {
                 //Use state values for those which are carried over from ListComments
-                //Use values. if obtained from Formik.
-                //
-                // id: this.state.id,
+                //Use values if obtained from Formik.
                 description: values.description,
                 urgencyLevel: 3,
                 inResponseTo: values.inResponseTo,
