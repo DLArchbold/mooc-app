@@ -25,7 +25,8 @@ class LoginComponent extends Component {
 
         
 
-        if((this.state.username==='Instructor 1' && this.state.password==='weijin') || (this.state.username === 'Student 1' && this.state.password === '')){
+        if((this.state.username==='Instructor 1' && this.state.password==='') 
+        || (this.state.username === 'Student 1' && this.state.password === '')){
            AuthenticationService.registerSuccessfulLogin(this.state.username, this.state.password)
             // this.props.history.push("/welcome")
             //use ticks not single quotes
