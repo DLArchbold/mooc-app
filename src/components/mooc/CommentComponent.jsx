@@ -36,7 +36,8 @@ class CommentComponent extends Component {
                 urgencyLevel: 3,
                 inResponseTo: values.inResponseTo,
                 targetDate: this.state.targetDate,
-                username: AuthenticationService.getLoggedInUserName()
+                username: AuthenticationService.getLoggedInUserName(),
+                lessonId: values.lessonId
             }).then(
                 //When successfully added redirect user to list all Comments
                 () => {
@@ -87,7 +88,8 @@ class CommentComponent extends Component {
                 response => this.setState({
                     description: response.data.description,
                     inResponseTo: response.data.inResponseTo,
-                    username: retrievedUsername
+                    username: retrievedUsername,
+                    lessonId: response.data.lessonId
                 }
                 ))
 
@@ -151,6 +153,10 @@ class CommentComponent extends Component {
                                     <fieldset className="form-group">
                                         <label>In response to</label>
                                         <Field className="form-control" type="number" name="inResponseTo" />
+                                    </fieldset>
+                                    <fieldset className="form-group">
+                                        <label>Lesson ID</label>
+                                        <Field className="form-control" type="number" name="lessonId" />
                                     </fieldset>
                                     <button className="btn btn-success" type="submit">Save</button>
                                 </Form>

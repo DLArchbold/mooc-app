@@ -16,7 +16,7 @@ import UserFollowingDataService from '../../api/userfollowing/UserFollowingDataS
 // toast.configure()
 
 
-//**https://stackoverflow.com/questions/41446560/react-setstate-not-updating-state */
+
 class LessonComponent extends Component {
 
     constructor(props) {
@@ -33,9 +33,7 @@ class LessonComponent extends Component {
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
             username: AuthenticationService.getLoggedInUserName(),
             successMessage: "",
-
             comments: [],
-
             hasReplies: Boolean(false),
             satisfactionLevel: "1",
             satisfactionFeedback: "",
@@ -45,12 +43,8 @@ class LessonComponent extends Component {
             submittedFeedback: false,
             modalIsOpen: false,
             expandMenu: false,
-
-            userFollow: [],
-            followedCommentsId: [],
-
-            filterParameters: { filterBy: "none" },
-            masterComments: []
+            userFollow :[],
+            followedCommentsId: []
         }
 
 
@@ -81,7 +75,7 @@ class LessonComponent extends Component {
 
     }
 
-
+    
 
     render() {
 
@@ -116,31 +110,15 @@ class LessonComponent extends Component {
         const handleFilter = (event) => {
             console.log("test filter" + event.target.value)
             var selectedFilter = event.target.value;
-
-
-
-
             if (selectedFilter === "none") {
-                this.setState({ filterParameters: { filterBy: "none" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
-                })
-
+                this.refreshComments({ filterBy: "none" })
             }
             else if (selectedFilter === "following") {
-                this.setState({ filterParameters: { filterBy: "following" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
-                })
-
+                this.refreshComments({ filterBy: "following" })
             } else if (selectedFilter === "asked") {
-                this.setState({ filterParameters: { filterBy: "asked", email: AuthenticationService.getLoggedInUserName(), inResponseTo: 0 } }, () => {
-                    this.refreshComments(this.state.filterParameters)
-                })
-
+                this.refreshComments({ filterBy: "asked", email: AuthenticationService.getLoggedInUserName(), inResponseTo: 0 })
             } else if (selectedFilter === "to_respond") {
-                this.setState({ filterParameters: { filterBy: "to_respond" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
-                })
-
+                this.refreshComments({ filterBy: "to_respond" })
             }
         }
 
@@ -342,18 +320,18 @@ class LessonComponent extends Component {
                                                 }
                                             </span>
                                             <h5 className="card-title" align="left"> {comment.username} - (comment id: {comment.id})</h5>
-
-
-                                            {!this.state.followedCommentsId.includes(comment.id)
+                                            
+                                            
+                                            { !this.state.followedCommentsId.includes(comment.id)
                                                 &&
-                                                (<button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() =>
-                                                    this.followQuestionThread(this.state.username, this.state.lessonId, comment.id)}>
+                                                (<button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() => 
+                                                this.followQuestionThread(this.state.username, this.state.lessonId, comment.id)}>
                                                     Follow question thread
                                                 </button>)
                                             }
-                                            {this.state.followedCommentsId.includes(comment.id)
+                                            { this.state.followedCommentsId.includes(comment.id)
                                                 &&
-                                                (<button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() =>
+                                                (<button style={{ display: "inline-block" }} className="btn btn-primary btn-sm" onClick={() => 
                                                     this.unFollowQuestionThread(this.state.username, this.state.lessonId, comment.id)}>
                                                     Unfollow question thread
                                                 </button>
@@ -369,9 +347,7 @@ class LessonComponent extends Component {
                                                 Reply to above comment
                                             </button>
 
-                                            <button style={{ display: "inline-block", marginLeft: '1rem' }}
-                                                className="btn btn-primary btn-sm"
-                                                onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
+                                            <button style={{ display: "inline-block", marginLeft: '1rem' }} className="btn btn-primary btn-sm" onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
                                                 ↑ Votes: {comment.votes}
                                             </button>
                                             <div>
@@ -610,9 +586,7 @@ class LessonComponent extends Component {
                     </button>
 
 
-                    <button style={{ display: "inline-block", marginLeft: '1rem' }}
-                        className="btn btn-primary btn-sm"
-                        onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
+                    <button style={{ display: "inline-block", marginLeft: '1rem' }} className="btn btn-primary btn-sm" onClick={() => this.upvote(comment.username, comment.id, comment.description, comment.urgencyLevel, comment.inResponseTo, comment.votes + 1)}>
                         ↑ Votes: {comment.votes}
                     </button>
 
@@ -724,8 +698,8 @@ className="alert alert-warning" /> */}
 
 
         console.log("componentDidMount")
-        this.refreshComments({ filterBy: this.state.filterParameters['filterBy'] });
-        this.getAndParseFollowedComments(this.state.username, this.state.lessonId);
+        this.refreshComments({ filterBy: "none" });
+        this.getAndParseFollowedComments( this.state.username, this.state.lessonId);
         // console.log(this.state)
 
 
@@ -735,9 +709,6 @@ className="alert alert-warning" /> */}
 
 
     }
-
-
-
     upvote(commentUsername, commentId, commentDescription, commentUrgencyLevel, commentInResponseTo, commentVotes) {
         CommentDataService.updateComment(commentUsername, commentId, {
             //Use state values for those which are carried over from ListComments
@@ -756,14 +727,9 @@ className="alert alert-warning" /> */}
 
             // console.log("successfully updates votes of a comment")
             // this.refreshComments()
-            (response) => {
-                this.refreshComments(this.state.filterParameters)
-            }
-
+            this.refreshComments({ filterBy: "none" })
         )
-        // this.refreshComments(this.state.filterParameters);
-        //     this.forceUpdate();
-        // this.refreshComments(this.state.filterParameters)
+        this.refreshComments({ filterBy: "none" })
     }
 
 
@@ -779,158 +745,26 @@ className="alert alert-warning" /> */}
             CommentDataService.retrieveCommentsByLessonId(this.state.lessonId)
                 .then(
                     response => {
-                        // console.log("response " + response.data)
-                        this.setState({ comments: response.data }, () => {
-                            // console.log("printing retrieved comments")
-                            // for (var i = 0; i < this.state.comments.length; i++) {
-                            //     console.log("comments: " + JSON.stringify(this.state.comments[i]))
-                            // }
-
-                            this.setState({ masterComments: response.data }, () => {
-                                // console.log("setting masterComments")
-                                // for (var i = 0; i < this.state.masterComments.length; i++) {
-                                //     console.log("masterComments: " + JSON.stringify(this.state.masterComments[i]))
-                                // }
-                            })
-
-                            //    this.doUpdate()
-                        })
+                        console.log("response " + response.data)
+                        this.setState({ comments: response.data })
 
                     }
 
                 )
         } else if (filterBy == "following") {
-            // var yourCallback = function() {
-            //     console.log("this.state.followedCommentsId: " + this.state.followedCommentsId);
-            // }
-            // this.getAndParseFollowedComments(this.state.username, this.state.lessonId);
-            UserFollowingDataService.getUserFollowUsingEmailAndLessonId(this.state.username, this.state.lessonId)
-                .then(
-
-                    response => {
-                        if (response !== undefined) {
-                            // console.log("in getAndParseFollowedComments")
-                            var uf = response.data
-                            // console.log("uf: " + JSON.stringify(uf))
 
 
-                            this.setState({ userFollow: uf }, () => {
-                                // console.log("userFollow:" + this.state.userFollow)
-                                var followedCommentsIdArr = [];
-                                let userFollowArr = [...this.state.userFollow];
-
-                                for (var i = 0; i < userFollowArr.length; i++) {
-                                    // console.log("userFollowArr[i]: " + userFollowArr[i])
-                                    followedCommentsIdArr.push(userFollowArr[i]['commentId'])
-                                    // console.log("followedCommentsIdArr: " + followedCommentsIdArr[i])
-                                }
-
-                                var temp = []
-
-                                for (var i = 0; i < this.state.masterComments.length; i++) {
-                                    // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                                    // console.log()
-                                    if (followedCommentsIdArr.includes(this.state.masterComments[i]['id'])) {
-                                        temp.push(this.state.masterComments[i]['id']);
-                                    }
-                                }
-                                // console.log(temp)
-                                var tempCommentThread = []
-                                var commentThreads = []
-                                for (var i = 0; i < temp.length; i++) {
-                                    tempCommentThread = this.getNestedThreadOfComments(temp[i]);
-                                    commentThreads = [...commentThreads, ...tempCommentThread];
-                                    // console.log("commentThreads: "+ commentThreads);
-                                }
-
-                                var filteredCommentThreads = this.state.masterComments.filter(
-                                    comment => commentThreads.includes(comment.id)
-                                )
-
-                                // var tempCommentThread = this.getNestedThreadOfComments(temp);
 
 
-                                //Change in this.state.comments will re-render whole page
-                                this.setState({ comments: [...filteredCommentThreads] }, () => {
 
-                                });
-
-                                //Leads to infinite loop because updates "Follow this comment" button conditional render
-                                // this.setState({ followedCommentsId: [...followedCommentsIdArr] }, () => {
-                                //     console.log("this.state.followedCommentsId: " + this.state.followedCommentsId)
-                                // });
-                            })
-
-
-                        } else {
-                            console.log("User not following any comments in this lesson")
-                        }
-
-                    }
-                )
 
 
         } else if (filterBy == "asked") {
-            //Get top level comments, then thread of comments from that, not just top-level comments
             CommentDataService.retrieveTopLevelCommentsByLessonIdByEmail(email, inResponseTo, this.state.lessonId)
                 .then(
                     response => {
-                        // console.log("response " + response.data)
-
-                        var c = response.data;
-                        // for (var i = 0; i < c.length; i++) {
-                        //     console.log("c: " + JSON.stringify(c[i]))
-                        // }
-
-                        this.setState({ comments: [] }, () => {
-                            // console.log("in filter asked");
-
-                            var commentThreads = []
-                            // console.log("commentThreads: "+ commentThreads);
-
-                            for (var i = 0; i < c.length; i++) {
-                                let temp = this.getNestedThreadOfComments(response.data[i]['id']);
-                                commentThreads = [...commentThreads, ...temp];
-                                // console.log("commentThreads: "+ commentThreads);
-                            }
-
-                            var commentArr = [];
-
-                            // console.log("this.state.masterComments.length: "+ this.state.masterComments.length);
-                            for (var i = 0; i < this.state.masterComments.length; i++) {
-                                // console.log("this.state.masterComments[i]: " + JSON.stringify(this.state.masterComments[i]));
-                                // console.log("commentThreads[i]: " + commentThreads[i]);
-                                // if (this.state.masterComments[i]['id'].includes(commentThreads[i])){
-                                //     commentArr.push(this.state.masterComments[i]);
-                                //     console.log("commentArr: "+ commentArr);
-                                // }
-
-
-                                if (commentThreads.includes(this.state.masterComments[i]['id'])) {
-                                    commentArr.push(this.state.masterComments[i]);
-                                    // console.log("commentArr: "+ commentArr);
-                                }
-                            }
-
-                            this.setState({ comments: commentArr }, () => {
-                                // for (var i = 0; i < this.state.comments.length; i++) {
-                                //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
-                                // }
-                            });
-
-                        });
-
-
-
-
-
-                        // this.setState({ comments: commentThreads }, () => {
-                        //     // console.log("comment Threads")
-                        //     console.log("comment threads:" + this.state.comments);
-                        //     for (var i = 0; i < this.state.comments.length; i++) {
-                        //         console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
-                        //     }
-                        // })
+                        console.log("response " + response.data)
+                        this.setState({ comments: response.data })
 
                     }
 
@@ -940,134 +774,11 @@ className="alert alert-warning" /> */}
 
             //get top level comments by lessonId
             //for each of those comments, see if there's any other comments with same lessonId, and 
-            //has a username/email of mine, do not display them
-            //else, 
-            //further filter retain and display them as ones that I'm yet to respond 
-            //determine by searching through and seeing if any of my comment's inResponseTo has 
-            // a value of one of those top-level comments retrieved earlier, do remove them
-            //setState({comments:}) to those who are remainingy
-            CommentDataService.retrieveTopLevelCommentsByLessonIdByEmailToRespond(this.state.username, this.state.lessonId)
-                .then(
-                    response => {
-                        var cIds = response.data;
-                        for (var i = 0; i < this.state.masterComments.length; i++) {
-                            if (cIds.includes(this.state.masterComments[i]['inResponseTo'])
-                                && this.state.masterComments[i]['username'] === this.state.username) {
-                                cIds = cIds.filter(id => {
-                                    id != this.state.masterComments[i]['inResponseTo'];
-                                })
-                            }
-                        }
-                        console.log("cIds : " + cIds);
-
-                        //Top level comments who have no other comments by current user who respond to it.
-                        let tempComments = this.state.masterComments.filter(
-                            a => cIds.includes(a['id'])
-                        )
-
-                        console.log("tempComments: "+ tempComments);
-                        let commentThreads = []
-                        
-                        for (var i = 0; i < tempComments.length; i++) {
-                            console.log("tempComments[i]: "+ tempComments[i]);
-                            console.log("commentThreads: "+ commentThreads);
-                            var temp = this.getNestedThreadOfComments(tempComments[i]['id']);
-                            for(var j = 0; j<temp.length; j++){
-                                commentThreads.push(temp[j]);
-                            }
-                            // commentThreads = [...commentThreads, this.getNestedThreadOfComments(tempComments[i]['id'])];
-                            // commentThreadFull = 
-                        }
-
-                        for(var i = 0; i<commentThreads.length; i++){
-                            console.log("commentThread[i]: " + commentThreads[i]);
-                        }
-                        // console.log("commentThreads.length: "+ commentThreads.length);
-                        console.log("this.state.masterComments: "+ this.state.masterComments.length);
-                        
-
-                        let commentThreadFull = []
-                        var t = [...this.state.masterComments]
-                        for(var i = 0; i<t.length; i++){
-                            // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                            // if(commentThreads.includes(this.state.masterComments[i]['id'])){
-                            //     console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                            //     commentThreadFull.push(this.state.masterComments[i]);
-                            // }
-                            console.log("t[i]['id']: " + JSON.stringify(t[i]['id']))
-
-
-                            for(var j = 0; j<commentThreads.length; j++){
-                                console.log("commentsThread[j]: " + commentThreads[j])
-                                console.log(t[i]['id'] == commentThreads[j]);
-                                if (t[i]['id'] == commentThreads[j]){
-                                    commentThreadFull.push(t[i])
-                                }
-                            }
-                        }
-                        // let commentThreadFull = this.state.masterComments.filter(
-                        //     a=>commentThreads.includes(a['id'])
-                        // )
-                        
-
-                        console.log("commentThreadFull: "+ commentThreadFull);
-                        this.setState({ comments: commentThreadFull }, () => {
-                            console.log("filter ToRespond")
-                            console.log("this.state.comments: "+ this.state.comments);
-                            // this.forceUpdate()
-                        });
-                        
-                        // this.setState({ comments: commentArr }, () => {
-                        //     // for (var i = 0; i < this.state.comments.length; i++) {
-                        //     //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
-                        //     // }
-                        // });
-                    }
-                )
-
+            //has a username/email of mine
+            //else, retain and display them as ones that I'm yet to respond 
         }
 
     }
-
-
-    getNestedThreadOfComments(commentIDToBeRepliedTo) {
-        //commentIDToBeRepliedTo
-
-        var comments = this.state.masterComments
-        //terminating recursive condition: when no more comments are replies to any upper level comments
-        var replies = []
-        var repliesToReturn = []
-
-        var commentReplies = []
-        // console.log("commentIDToBeRepliedTo: " + commentIDToBeRepliedTo)
-        for (var i = 0; i < comments.length; i++) {
-            var singleComment = comments[i]
-
-            if (singleComment.inResponseTo == commentIDToBeRepliedTo) {
-
-                commentReplies.push(singleComment)
-                // console.log("singleComment.id: " + singleComment.id)
-            }
-        }
-
-
-
-        if (commentReplies.length > 0) {
-
-            for (var i = 0; i < commentReplies.length; i++) {
-                replies = this.getNestedThreadOfComments(commentReplies[i]['id']);
-                repliesToReturn = [...repliesToReturn, ...replies]
-
-            }
-            repliesToReturn = [...repliesToReturn, commentIDToBeRepliedTo]
-
-            return repliesToReturn;
-
-        } else {
-            return [commentIDToBeRepliedTo];
-        }
-    }
-
 
 
     followQuestionThread(username, lessonId, commentId) {
@@ -1080,20 +791,12 @@ className="alert alert-warning" /> */}
         UserFollowingDataService.createUserFollow(userFollow)
             .then(
                 response => {
-                    console.log("username" + username + " " + "lessonId: " + lessonId + " " + "commentId" + " " + commentId)
-                    console.log("in followQuestionThread : response: " + response.data['username'] + " " + response.data['lessonId'] + " " + response.data['commentId'])
-
-                    this.getAndParseFollowedComments(username, lessonId);
-                    // this.setState({followedCommentsId: this.getAndParseFollowedComments(username, lessonId)});
-                    // this.setState({followedCommentsId:followedCommentsIdArr})
-                    // this.setState({userFollow:response.data})
+                    console.log("response: " + response.data['lessonId'])
                 }
             )
-        // this.getAndParseFollowedComments(username, lessonId);
-        // this.refreshComments(this.state.filterParameters);
-        // this.render();
-        // this.forceUpdate();
-        // this.forceUpdate();
+        this.getAndParseFollowedComments(username, lessonId);
+        this.forceUpdate();
+        this.forceUpdate();
     }
 
     unFollowQuestionThread(username, lessonId, commentId) {
@@ -1106,81 +809,48 @@ className="alert alert-warning" /> */}
         UserFollowingDataService.deleteUserFollowUsingEmailAndLessonIdAndCommentId(username, lessonId, commentId)
             .then(
                 response => {
-                    console.log("username" + username + " " + "lessonId: " + lessonId + " " + "commentId" + " " + commentId)
-                    console.log("in unfollowQuestionThread : response: " + response.data['username'] + " " + response.data['lessonId'] + " " + response.data['commentId'])
-                    this.getAndParseFollowedComments(username, lessonId);
+                    console.log("response: " + response.data['lessonId'])
                 }
             )
+        
+        this.getAndParseFollowedComments(username, lessonId);
 
-
-        // this.refreshComments(this.state.filterParameters);
-        // this.render();
         // let followedCommentsArr = this.state.followedCommentsId;
         // followedCommentsArr = followedCommentsArr(x=>x!==commentId);
         // this.setState(
         //     {followedCommentsId:followedCommentsArr}
         // )
-        // this.forceUpdate();
-        // this.forceUpdate();
+        this.forceUpdate();
+        this.forceUpdate();
 
     }
 
     getAndParseFollowedComments(email, lessonId) {
         UserFollowingDataService.getUserFollowUsingEmailAndLessonId(email, lessonId)
             .then(
-
                 response => {
-                    if (response !== undefined) {
-                        console.log("in getAndParseFollowedComments")
-                        var uf = response.data
-                        console.log("uf: " + JSON.stringify(uf))
+                    
+                    var uf  = response.data
+                    // console.log("uf: " + JSON.stringify(uf))
+            
 
+                    this.setState({userFollow : uf })
+                    console.log("parsing follows: "+ this.state.userFollow)
 
-                        this.setState({ userFollow: uf }, () => {
-                            console.log("userFollow:" + this.state.userFollow)
-                            var followedCommentsIdArr = [];
-                            let userFollowArr = [...this.state.userFollow];
+                    var followedCommentsIdArr = [];
+                    let userFollowArr = this.state.userFollow;
 
-                            for (var i = 0; i < userFollowArr.length; i++) {
-                                // console.log("userFollowArr[i]: " + userFollowArr[i])
-                                followedCommentsIdArr.push(userFollowArr[i]['commentId'])
-                                console.log("followedCommentsIdArr: " + followedCommentsIdArr[i])
-                            }
-                            this.setState({ followedCommentsId: [...followedCommentsIdArr] }, () => {
-                                console.log("this.state.followedCommentsId: " + this.state.followedCommentsId)
-                            });
-                        })
-
-                        // this.setState({ userFollow: uf })
-                        // console.log("userFollow: " + this.state.userFollow)
-
-
-
-
-                        // for (var i = 0; i < userFollowArr.length; i++) {
-                        //     // console.log("userFollowArr[i]: " + userFollowArr[i])
-                        //     // followedCommentsIdArr.push(userFollowArr[i]['commentId'])
-                        //     console.log("this.state.followedCommentsId: " + this.state.followedCommentsId[i])
-                        // }
-                        // return followedCommentsIdArr;
-                        // this.setState({ followedCommentsId: followedCommentsIdArr });
-                        // console.log("followed comments" + followedCommentsIdArr)
-                        // this.forceUpdate();
-                    } else {
-                        console.log("User not following any comments in this lesson")
+                    for(var i=0; i<userFollowArr.length; i++){
+                        console.log("userFollowArr[i]: " + userFollowArr[i])
+                        followedCommentsIdArr.push(userFollowArr[i]['commentId'])
                     }
-
+                    
+                    this.setState({followedCommentsId: followedCommentsIdArr});
+                    console.log("followed comments" + followedCommentsIdArr)
                 }
             )
-        // this.forceUpdate();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.followedCommentsId !== this.state.followedCommentsId) {
-            console.log('pokemons state has changed.')
-            this.refreshComments(this.state.filterParameters);
-        }
-    }
 
     //When Updating(PUT) or Creating(POST) comments
     onSubmit(values) {

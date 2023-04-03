@@ -1,0 +1,42 @@
+.RegisterMain{
+    /* display:flex; */
+    overflow: hidden;
+    
+}
+
+.actualForm{
+    justify-content: center;
+    align-content: center;
+    display:flex;
+}
+
+.alert-success .register{
+    /* width:30%;
+    display: flex;
+    align-self: center;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center; */
+}
+
+
+.registerForm{
+    display:flex;
+    width:30%;
+    position:relative;
+    align-content: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.btn-success.register{
+    width: 60%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+}

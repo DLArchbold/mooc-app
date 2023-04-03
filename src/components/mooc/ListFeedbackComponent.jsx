@@ -5,6 +5,8 @@ import AuthenticationService from './AuthenticationService.js'
 import moment from 'moment/moment'
 import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
+import "../../ListFeedbackComponent.css"
+
 
 class ListFeedbackComponent extends Component {
     constructor(props) {
@@ -160,10 +162,10 @@ class ListFeedbackComponent extends Component {
         let { lesson} = this.state
         return (
 
-            <div>
+            <div className='filterMain'>
                 <h1>List Feedback for lesson</h1>
-                <div>
-                <Formik
+                <div className='actualFilterForm'>
+                <Formik 
                     initialValues={{ lesson }}
                     onSubmit={this.filterFeedback}
                     validateOnBlur={false}
@@ -173,7 +175,7 @@ class ListFeedbackComponent extends Component {
                 >
                     {
                         (props) => (
-                            <Form>
+                            <Form className='filterFeedbackForm'>
                                 <ErrorMessage name="description" component="div"
                                     className="alert alert-warning" />
                                 {/* <ErrorMessage name="inResponseTo" component="div"
@@ -182,12 +184,14 @@ className="alert alert-warning" /> */}
                                     <label>List feedback for lesson</label>
                                     <Field className="form-control" type="text" name="lesson" />
                                 </fieldset>
-                                <button className="btn btn-success" type="submit">Filter feedback</button>
+                                <button className="btn btn-success filter" type="submit">Filter feedback</button>
                             </Form>
                         )
                     }
 
                 </Formik>
+
+
                 </div>
                 {/* <select name="lesson" id="plan">
                     <option >Lesson</option>

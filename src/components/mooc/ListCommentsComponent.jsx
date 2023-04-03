@@ -101,6 +101,7 @@ class ListCommentsComponent extends Component{
                         <th>in response to comment</th>
                         <th>Target Date</th>
                         <th>Commenter</th>
+                        <th>Lesson ID</th>
                         <th>Update</th>
                         <th>Delete</th>
                     </tr>
@@ -115,6 +116,7 @@ class ListCommentsComponent extends Component{
                         <td>{comment.inResponseTo}</td>
                         <td>{moment(comment.targetDate).format('YYYY-MM-DD')}</td>
                         <td>{comment.username}</td>
+                        <td>{comment.lessonId}</td>
                         <td><button className = "btn btn-success" onClick={()=> this.updateCommentClicked(comment.id)}>Update</button></td>
                         <td><button className = "btn btn-warning" onClick={()=> this.deleteCommentClicked(comment.id)}>Delete</button></td>
                     </tr>

@@ -1,0 +1,20 @@
+.filterForm{
+    /* display:flex;
+    flex-wrap: wrap; */
+    display: flex ;
+    /* margin-left: 20px; */
+    
+    /*use first 2 below or float*/
+    /* margin-left:auto;
+    margin-right: 0; */
+    float:right;
+    
+    flex:1.0;
+    /* position:absolute; */
+    flex-direction: column;
+    /* align-self: flex-start; */
+    /* align-content: right;
+    justify-content: right; */
+    width: 13%;
+    /* align-items: right; */
+}

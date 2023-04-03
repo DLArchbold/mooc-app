@@ -1,63 +1,45 @@
 
 
 import axios from "axios";
-import { API_URL } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL } from '../../Constants'
 class FeedbackDataService{
+    urlType = "l";
 
+    
+    getUrl(urlType){
+        if (urlType ==="l"){
+            return LOCAL_API_URL;
+        }else if (urlType === "r"){
+            return REMOTE_API_URL;
+        }
+     }
     retrieveAllFeedback(){
-
-        return axios.get(`${API_URL}/feedback`);
+        let API_URL = this.getUrl(this.urlType)
+            return axios.get(`${API_URL}/feedback`);
+        
+       
     }
 
     retrieveAllFeedbackForALesson(lessonId){
-
-        return axios.get(`${API_URL}/${lessonId}/feedback`);
+        let API_URL = this.getUrl(this.urlType)
+            return axios.get(`${API_URL}/${lessonId}/feedback`);
+        
+        
     }
 
     deleteFeedback(lessonId, feedbackId){
-
-        return axios.delete(`${API_URL}/${lessonId}/feedback/${feedbackId}`);
+        let API_URL = this.getUrl(this.urlType)
+            return axios.delete(`${API_URL}/${lessonId}/feedback/${feedbackId}`);
+        
+       
     }
 
      createFeedback(lessonId, feedback){
-
-        return axios.post(`${API_URL}/${lessonId}/feedback`, feedback);
+        let API_URL = this.getUrl(this.urlType)
+            return axios.post(`${API_URL}/${lessonId}/feedback`, feedback);
+        
+        
     }
 }
 
 export default new FeedbackDataService()
-
-
-
-
-// import axios from "axios";
-
-
-// class FeedbackDataService{
-
-//     retrieveAllFeedback(){
-
-//         return axios.get(`http://localhost:8080/feedback`);
-//     }
-
-//     retrieveAllFeedbackForALesson(lessonId){
-
-//         return axios.get(`http://localhost:8080/${lessonId}/feedback`);
-//     }
-
-//     deleteFeedback(lessonId, feedbackId){
-
-//         return axios.delete(`http://localhost:8080/${lessonId}/feedback/${feedbackId}`);
-//     }
-
-//      createFeedback(lessonId, feedback){
-
-//         return axios.post(`http://localhost:8080/${lessonId}/feedback`, feedback);
-//     }
-
-    
-
-
-// }
-
-// export default new FeedbackDataService()

@@ -15,7 +15,8 @@ import CommentComponent from './CommentComponent'
 import LessonComponent from './LessonComponent.jsx'
 import ListFeedbackComponent from './ListFeedbackComponent.jsx'
 import Lesson2Component from './Lesson2Component.jsx'
-
+import RegisterComponent from './RegisterComponent.jsx'
+import '../../MoocApp.css'
 class MoocApp extends Component {
 
     render() {
@@ -28,7 +29,7 @@ class MoocApp extends Component {
         const ListCommentsComponentWithNavigation = withNavigation(ListCommentsComponent);
         const ListFeedbackComponentWithNavigation = withNavigation(ListFeedbackComponent);
         const CommentComponentWithParamsAndNavigation = withParams(withNavigation(CommentComponent));
-
+        const RegisterComponentWithNavigation = withNavigation(RegisterComponent);
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -40,7 +41,9 @@ class MoocApp extends Component {
                     <HeaderComponentWithNavigation />
                     <Routes>
                         <Route path="/" element={<LoginComponentWithNavigation />} />
-                        <Route path="/login" element={<LoginComponentWithNavigation />} />
+                        <Route path="/login" element={
+                            <LoginComponentWithNavigation />
+                        } />
                         <Route path="/welcome/:name" element={
                             <AuthenticatedRoute>
                                 <WelcomeComponentWithParams />
@@ -76,6 +79,9 @@ class MoocApp extends Component {
                                 <Lesson2Component/>
                             </AuthenticatedRoute>
                         }/>
+                        <Route path="/register" element={
+                            <RegisterComponentWithNavigation />
+                        } />
                         <Route path="*" element={<ErrorComponent />} />
                     </Routes>
                     <FooterComponent />

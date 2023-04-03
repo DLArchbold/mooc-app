@@ -3,7 +3,7 @@ class FooterComponent extends Component {
     render() {
         return (
             <footer className="footer">
-                <span className="text-muted">CS 8803 - Jin-Sam </span>
+                <span className="text-muted">MOOC Application </span>
             </footer>
         )
     }

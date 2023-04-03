@@ -1,0 +1,44 @@
+.filterMain{
+    /* position: absolute; */
+    overflow: hidden;
+    
+}
+
+.actualFilterForm{
+    position:relative;
+    align-self: center;
+    justify-content: center;
+    align-content: center;
+    display:flex;
+}
+
+.alert-success{
+    /* width:30%;
+    display: flex;
+    align-self: center;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center; */
+}
+
+
+.filterFeedbackForm{
+    display:flex;
+    width:30%;
+    position:relative;
+    align-content: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.btn-success.filter{
+    width: 60%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+}
