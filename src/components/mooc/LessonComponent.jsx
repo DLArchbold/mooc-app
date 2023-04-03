@@ -30,7 +30,7 @@ class LessonComponent extends Component {
             inResponseTo: '',
             description: "",
             urgencyLevel: "1",
-            targetDate: moment(new Date()).format('YYYY-MM-DD'),
+            targetDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ'),
             username: AuthenticationService.getLoggedInUserName(),
             successMessage: "",
 
@@ -50,7 +50,8 @@ class LessonComponent extends Component {
             followedCommentsId: [],
 
             filterParameters: { filterBy: "none" },
-            masterComments: []
+            masterComments: [],
+            sortParameters: { sortBy: "none" }
         }
 
 
@@ -122,23 +123,46 @@ class LessonComponent extends Component {
 
             if (selectedFilter === "none") {
                 this.setState({ filterParameters: { filterBy: "none" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
                 })
 
             }
             else if (selectedFilter === "following") {
                 this.setState({ filterParameters: { filterBy: "following" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
                 })
 
             } else if (selectedFilter === "asked") {
                 this.setState({ filterParameters: { filterBy: "asked", email: AuthenticationService.getLoggedInUserName(), inResponseTo: 0 } }, () => {
-                    this.refreshComments(this.state.filterParameters)
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
                 })
 
             } else if (selectedFilter === "to_respond") {
                 this.setState({ filterParameters: { filterBy: "to_respond" } }, () => {
-                    this.refreshComments(this.state.filterParameters)
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
+                })
+
+            }
+        }
+
+        const handleSort = (event) => {
+            console.log("test filter" + event.target.value)
+            var selectedFilter = event.target.value;
+
+            if (selectedFilter === "none") {
+                this.setState({ sortParameters: { sortBy: "none" } }, () => {
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
+                })
+
+            }
+            else if (selectedFilter === "mostRecent") {
+                this.setState({ sortParameters: { sortBy: "mostRecent" } }, () => {
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
+                })
+
+            } else if (selectedFilter === "upvotes") {
+                this.setState({ sortParameters: { sortBy: "upvotes" } }, () => {
+                    this.refreshComments(this.state.filterParameters, this.state.sortParameters)
                 })
 
             }
@@ -298,6 +322,18 @@ class LessonComponent extends Component {
                         <option value="following">Following</option>
 
                         <option value="to_respond">To respond</option>
+
+                    </select>
+                </div>
+                <br></br>
+                <div className="sortForm">
+                    <select onChange={handleSort} className="form-select" defaultValue={"none"}>
+
+                        <option value="none"  >Sort top-level comments</option>
+
+                        <option value="mostRecent">Most Recent</option>
+
+                        <option value="upvotes">Upvotes</option>
 
                     </select>
                 </div>
@@ -724,7 +760,7 @@ className="alert alert-warning" /> */}
 
 
         console.log("componentDidMount")
-        this.refreshComments({ filterBy: this.state.filterParameters['filterBy'] });
+        this.refreshComments({ filterBy: this.state.filterParameters['filterBy'] }, this.state.sortParameters);
         this.getAndParseFollowedComments(this.state.username, this.state.lessonId);
         // console.log(this.state)
 
@@ -739,6 +775,13 @@ className="alert alert-warning" /> */}
 
 
     upvote(commentUsername, commentId, commentDescription, commentUrgencyLevel, commentInResponseTo, commentVotes) {
+        var date;
+        for (var i = 0; i < this.state.masterComments.length; i++) {
+            if (this.state.masterComments[i]['id'] == commentId) {
+                date = this.state.masterComments[i]['targetDate']
+            }
+        }
+
         CommentDataService.updateComment(commentUsername, commentId, {
             //Use state values for those which are carried over from ListComments
             //Use values. if obtained from Formik.
@@ -747,7 +790,7 @@ className="alert alert-warning" /> */}
             description: commentDescription,
             urgencyLevel: commentUrgencyLevel,
             inResponseTo: commentInResponseTo,
-            targetDate: this.state.targetDate,
+            targetDate: date,
             username: commentUsername,
             votes: commentVotes,
             lessonId: this.state.lessonId
@@ -756,8 +799,8 @@ className="alert alert-warning" /> */}
 
             // console.log("successfully updates votes of a comment")
             // this.refreshComments()
-            (response) => {
-                this.refreshComments(this.state.filterParameters)
+            response => {
+                this.refreshComments(this.state.filterParameters, this.state.sortParameters);
             }
 
         )
@@ -766,35 +809,90 @@ className="alert alert-warning" /> */}
         // this.refreshComments(this.state.filterParameters)
     }
 
+    sortComments(sortBy) {
 
-    refreshComments(filterParams) {
+        var comments = [...this.state.comments]
+        var sortedComments = []
+        if (this.state.sortParameters['sortBy'] == "none") {
+
+
+            this.setState({ comments: comments }, () => {
+                for (var i = 0; i < this.state.comments.length; i++) {
+                    // console.log("this.state.comments[i] " + JSON.stringify(this.state.comments[i]));
+                }
+                console.log("sorted by none")
+            })
+        } else if (this.state.sortParameters['sortBy'] == "mostRecent") {
+
+            sortedComments = comments.sort(
+                (p1, p2) =>
+                    (Date.parse(p1.targetDate) < Date.parse(p2.targetDate)) ? 1 : (Date.parse(p1.targetDate) > Date.parse(p2.targetDate)) ? -1 : 0
+
+
+            );
+            this.setState({ comments: sortedComments }, () => {
+                for (var i = 0; i < this.state.comments.length; i++) {
+                    console.log("this.state.comments[i] " + JSON.stringify(this.state.comments[i]));
+                    console.log(Date.parse(comments[i]['targetDate']))
+                }
+                console.log("sorted by mostRecent")
+            })
+
+
+        } else if (this.state.sortParameters['sortBy'] == "upvotes") {
+            sortedComments = comments.sort(
+                (p1, p2) => (p1.votes < p2.votes) ? 1 : (p1.votes > p2.votes) ? -1 : 0
+            );
+            this.setState({ comments: sortedComments }, () => {
+                for (var i = 0; i < this.state.comments.length; i++) {
+                    // console.log("this.state.comments[i] " + JSON.stringify(this.state.comments[i]));
+                }
+                console.log("sorted by upvotes")
+                this.forceUpdate()
+            })
+        }
+    }
+
+    refreshComments(filterParams, sortParams) {
         console.log("in refresh comments x")
         let username = filterParams['email'];
         let email = filterParams['email'];
         let filterBy = filterParams['filterBy'];
         let inResponseTo = filterParams['inResponseTo']
+        let sortBy = sortParams['sortBy']
 
 
         if (filterBy == "none") {
             CommentDataService.retrieveCommentsByLessonId(this.state.lessonId)
                 .then(
                     response => {
-                        // console.log("response " + response.data)
-                        this.setState({ comments: response.data }, () => {
-                            // console.log("printing retrieved comments")
-                            // for (var i = 0; i < this.state.comments.length; i++) {
-                            //     console.log("comments: " + JSON.stringify(this.state.comments[i]))
-                            // }
 
-                            this.setState({ masterComments: response.data }, () => {
-                                // console.log("setting masterComments")
-                                // for (var i = 0; i < this.state.masterComments.length; i++) {
-                                //     console.log("masterComments: " + JSON.stringify(this.state.masterComments[i]))
+                        if (response != undefined) {
+                            // console.log("response " + response.data)
+                            this.setState({ comments: response.data }, () => {
+                                // console.log("printing retrieved comments")
+                                // for (var i = 0; i < this.state.comments.length; i++) {
+                                //     console.log("comments: " + JSON.stringify(this.state.comments[i]))
                                 // }
-                            })
 
-                            //    this.doUpdate()
-                        })
+                                this.setState({ masterComments: response.data }, () => {
+                                    // console.log("setting masterComments")
+                                    // for (var i = 0; i < this.state.masterComments.length; i++) {
+                                    //     console.log("masterComments: " + JSON.stringify(this.state.masterComments[i]))
+                                    // }
+                                    this.sortComments(sortBy);
+                                })
+
+                                //    this.doUpdate()
+                            })
+                        } else {
+                            console.log("No comments in this lesson")
+                            var temp = [...this.state.masterComments]
+                            this.setState({ comments: temp }, () => {
+                                this.sortComments(sortBy);
+                            });
+                        }
+
 
                     }
 
@@ -825,45 +923,60 @@ className="alert alert-warning" /> */}
                                     // console.log("followedCommentsIdArr: " + followedCommentsIdArr[i])
                                 }
 
-                                var temp = []
+                                CommentDataService.retrieveTopLevelCommentsByLessonId(this.state.lessonId)
+                                    .then(
+                                        response => {
 
-                                for (var i = 0; i < this.state.masterComments.length; i++) {
-                                    // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                                    // console.log()
-                                    if (followedCommentsIdArr.includes(this.state.masterComments[i]['id'])) {
-                                        temp.push(this.state.masterComments[i]['id']);
-                                    }
-                                }
-                                // console.log(temp)
-                                var tempCommentThread = []
-                                var commentThreads = []
-                                for (var i = 0; i < temp.length; i++) {
-                                    tempCommentThread = this.getNestedThreadOfComments(temp[i]);
-                                    commentThreads = [...commentThreads, ...tempCommentThread];
-                                    // console.log("commentThreads: "+ commentThreads);
-                                }
+                                            this.setState({ masterComments: response.data }, () => {
+                                                var temp = []
 
-                                var filteredCommentThreads = this.state.masterComments.filter(
-                                    comment => commentThreads.includes(comment.id)
-                                )
+                                                for (var i = 0; i < this.state.masterComments.length; i++) {
+                                                    // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
+                                                    // console.log()
+                                                    if (followedCommentsIdArr.includes(this.state.masterComments[i]['id'])) {
+                                                        temp.push(this.state.masterComments[i]['id']);
+                                                    }
+                                                }
+                                                // console.log(temp)
+                                                var tempCommentThread = []
+                                                var commentThreads = []
+                                                for (var i = 0; i < temp.length; i++) {
+                                                    tempCommentThread = this.getNestedThreadOfComments(temp[i]);
+                                                    commentThreads = [...commentThreads, ...tempCommentThread];
+                                                    // console.log("commentThreads: "+ commentThreads);
+                                                }
 
-                                // var tempCommentThread = this.getNestedThreadOfComments(temp);
+                                                var filteredCommentThreads = this.state.masterComments.filter(
+                                                    comment => commentThreads.includes(comment.id)
+                                                )
+
+                                                // var tempCommentThread = this.getNestedThreadOfComments(temp);
 
 
-                                //Change in this.state.comments will re-render whole page
-                                this.setState({ comments: [...filteredCommentThreads] }, () => {
+                                                //Change in this.state.comments will re-render whole page
+                                                this.setState({ comments: [...filteredCommentThreads] }, () => {
+                                                    this.sortComments(sortBy);
+                                                });
 
-                                });
 
-                                //Leads to infinite loop because updates "Follow this comment" button conditional render
-                                // this.setState({ followedCommentsId: [...followedCommentsIdArr] }, () => {
-                                //     console.log("this.state.followedCommentsId: " + this.state.followedCommentsId)
-                                // });
+                                                //Leads to infinite loop because updates "Follow this comment" button conditional render
+                                                // this.setState({ followedCommentsId: [...followedCommentsIdArr] }, () => {
+                                                //     console.log("this.state.followedCommentsId: " + this.state.followedCommentsId)
+                                                // });
+                                            })
+
+                                        }
+                                    )
+
                             })
 
 
                         } else {
                             console.log("User not following any comments in this lesson")
+                            var temp = []
+                            this.setState({ comments: temp }, () => {
+                                this.sortComments(sortBy);
+                            });
                         }
 
                     }
@@ -875,62 +988,100 @@ className="alert alert-warning" /> */}
             CommentDataService.retrieveTopLevelCommentsByLessonIdByEmail(email, inResponseTo, this.state.lessonId)
                 .then(
                     response => {
-                        // console.log("response " + response.data)
 
-                        var c = response.data;
-                        // for (var i = 0; i < c.length; i++) {
-                        //     console.log("c: " + JSON.stringify(c[i]))
-                        // }
 
-                        this.setState({ comments: [] }, () => {
-                            // console.log("in filter asked");
+                        if (response != undefined) {
+                            // console.log("response " + response.data)
 
-                            var commentThreads = []
-                            // console.log("commentThreads: "+ commentThreads);
+                            var c = response.data;
+                            // for (var i = 0; i < c.length; i++) {
+                            //     console.log("c: " + JSON.stringify(c[i]))
+                            // }
 
-                            for (var i = 0; i < c.length; i++) {
-                                let temp = this.getNestedThreadOfComments(response.data[i]['id']);
-                                commentThreads = [...commentThreads, ...temp];
+                            this.setState({ comments: [] }, () => {
+                                // console.log("in filter asked");
+
+                                var commentThreads = []
                                 // console.log("commentThreads: "+ commentThreads);
-                            }
 
-                            var commentArr = [];
-
-                            // console.log("this.state.masterComments.length: "+ this.state.masterComments.length);
-                            for (var i = 0; i < this.state.masterComments.length; i++) {
-                                // console.log("this.state.masterComments[i]: " + JSON.stringify(this.state.masterComments[i]));
-                                // console.log("commentThreads[i]: " + commentThreads[i]);
-                                // if (this.state.masterComments[i]['id'].includes(commentThreads[i])){
-                                //     commentArr.push(this.state.masterComments[i]);
-                                //     console.log("commentArr: "+ commentArr);
-                                // }
-
-
-                                if (commentThreads.includes(this.state.masterComments[i]['id'])) {
-                                    commentArr.push(this.state.masterComments[i]);
-                                    // console.log("commentArr: "+ commentArr);
+                                for (var i = 0; i < c.length; i++) {
+                                    let temp = this.getNestedThreadOfComments(response.data[i]['id']);
+                                    for (var j = 0; j < temp.length; j++) {
+                                        commentThreads.push(temp[j]);
+                                    }
+                                    // commentThreads = [...commentThreads, ...temp];
+                                    // console.log("commentThreads: "+ commentThreads);
                                 }
-                            }
 
-                            this.setState({ comments: commentArr }, () => {
-                                // for (var i = 0; i < this.state.comments.length; i++) {
-                                //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
+                                // for (var i = 0; i < tempComments.length; i++) {
+                                //     console.log("tempComments[i]: " + tempComments[i]);
+                                //     console.log("commentThreads: " + commentThreads);
+                                //     var temp = this.getNestedThreadOfComments(tempComments[i]['id']);
+                                //     for (var j = 0; j < temp.length; j++) {
+                                //         commentThreads.push(temp[j]);
+                                //     }
+                                //     // commentThreads = [...commentThreads, this.getNestedThreadOfComments(tempComments[i]['id'])];
+                                //     // commentThreadFull = 
                                 // }
+
+                                CommentDataService.retrieveCommentsByLessonId(this.state.lessonId)
+                                    .then(
+                                        response => {
+
+                                            this.setState({ masterComments: response.data }, () => {
+
+                                                var commentArr = [];
+
+                                                // console.log("this.state.masterComments.length: "+ this.state.masterComments.length);
+                                                for (var i = 0; i < this.state.masterComments.length; i++) {
+                                                    // console.log("this.state.masterComments[i]: " + JSON.stringify(this.state.masterComments[i]));
+                                                    // console.log("commentThreads[i]: " + commentThreads[i]);
+                                                    // if (this.state.masterComments[i]['id'].includes(commentThreads[i])){
+                                                    //     commentArr.push(this.state.masterComments[i]);
+                                                    //     console.log("commentArr: "+ commentArr);
+                                                    // }
+
+
+                                                    if (commentThreads.includes(this.state.masterComments[i]['id'])) {
+                                                        commentArr.push(this.state.masterComments[i]);
+                                                        // console.log("commentArr: "+ commentArr);
+                                                    }
+                                                }
+
+                                                this.setState({ comments: commentArr }, () => {
+                                                    // for (var i = 0; i < this.state.comments.length; i++) {
+                                                    //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
+                                                    // }
+                                                    console.log("in asked");
+                                                    this.sortComments(this.state.sortParameters);
+                                                });
+                                            })
+
+                                        }
+                                    )
+
+
                             });
 
-                        });
 
 
 
 
+                            // this.setState({ comments: commentThreads }, () => {
+                            //     // console.log("comment Threads")
+                            //     console.log("comment threads:" + this.state.comments);
+                            //     for (var i = 0; i < this.state.comments.length; i++) {
+                            //         console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
+                            //     }
+                            // })
+                        } else {
+                            console.log("User has not asked any questions in this lesson")
+                            var temp = [...this.state.masterComments]
+                            this.setState({ comments: temp }, () => {
+                                this.sortComments(sortBy);
+                            });
+                        }
 
-                        // this.setState({ comments: commentThreads }, () => {
-                        //     // console.log("comment Threads")
-                        //     console.log("comment threads:" + this.state.comments);
-                        //     for (var i = 0; i < this.state.comments.length; i++) {
-                        //         console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
-                        //     }
-                        // })
 
                     }
 
@@ -949,79 +1100,100 @@ className="alert alert-warning" /> */}
             CommentDataService.retrieveTopLevelCommentsByLessonIdByEmailToRespond(this.state.username, this.state.lessonId)
                 .then(
                     response => {
-                        var cIds = response.data;
-                        for (var i = 0; i < this.state.masterComments.length; i++) {
-                            if (cIds.includes(this.state.masterComments[i]['inResponseTo'])
-                                && this.state.masterComments[i]['username'] === this.state.username) {
-                                cIds = cIds.filter(id => {
-                                    id != this.state.masterComments[i]['inResponseTo'];
-                                })
-                            }
-                        }
-                        console.log("cIds : " + cIds);
 
-                        //Top level comments who have no other comments by current user who respond to it.
-                        let tempComments = this.state.masterComments.filter(
-                            a => cIds.includes(a['id'])
-                        )
-
-                        console.log("tempComments: "+ tempComments);
-                        let commentThreads = []
-                        
-                        for (var i = 0; i < tempComments.length; i++) {
-                            console.log("tempComments[i]: "+ tempComments[i]);
-                            console.log("commentThreads: "+ commentThreads);
-                            var temp = this.getNestedThreadOfComments(tempComments[i]['id']);
-                            for(var j = 0; j<temp.length; j++){
-                                commentThreads.push(temp[j]);
-                            }
-                            // commentThreads = [...commentThreads, this.getNestedThreadOfComments(tempComments[i]['id'])];
-                            // commentThreadFull = 
-                        }
-
-                        for(var i = 0; i<commentThreads.length; i++){
-                            console.log("commentThread[i]: " + commentThreads[i]);
-                        }
-                        // console.log("commentThreads.length: "+ commentThreads.length);
-                        console.log("this.state.masterComments: "+ this.state.masterComments.length);
-                        
-
-                        let commentThreadFull = []
-                        var t = [...this.state.masterComments]
-                        for(var i = 0; i<t.length; i++){
-                            // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                            // if(commentThreads.includes(this.state.masterComments[i]['id'])){
-                            //     console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
-                            //     commentThreadFull.push(this.state.masterComments[i]);
-                            // }
-                            console.log("t[i]['id']: " + JSON.stringify(t[i]['id']))
-
-
-                            for(var j = 0; j<commentThreads.length; j++){
-                                console.log("commentsThread[j]: " + commentThreads[j])
-                                console.log(t[i]['id'] == commentThreads[j]);
-                                if (t[i]['id'] == commentThreads[j]){
-                                    commentThreadFull.push(t[i])
+                        if (response != undefined) {
+                            var cIds = response.data;
+                            for (var i = 0; i < this.state.masterComments.length; i++) {
+                                if (cIds.includes(this.state.masterComments[i]['inResponseTo'])
+                                    && this.state.masterComments[i]['username'] === this.state.username) {
+                                    cIds = cIds.filter(id => {
+                                        id != this.state.masterComments[i]['inResponseTo'];
+                                    })
                                 }
                             }
-                        }
-                        // let commentThreadFull = this.state.masterComments.filter(
-                        //     a=>commentThreads.includes(a['id'])
-                        // )
-                        
+                            console.log("cIds : " + cIds);
 
-                        console.log("commentThreadFull: "+ commentThreadFull);
-                        this.setState({ comments: commentThreadFull }, () => {
-                            console.log("filter ToRespond")
-                            console.log("this.state.comments: "+ this.state.comments);
-                            // this.forceUpdate()
-                        });
-                        
-                        // this.setState({ comments: commentArr }, () => {
-                        //     // for (var i = 0; i < this.state.comments.length; i++) {
-                        //     //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
-                        //     // }
-                        // });
+                            //Top level comments who have no other comments by current user who respond to it.
+                            let tempComments = this.state.masterComments.filter(
+                                a => cIds.includes(a['id'])
+                            )
+
+                            console.log("tempComments: " + tempComments);
+                            let commentThreads = []
+
+                            for (var i = 0; i < tempComments.length; i++) {
+                                console.log("tempComments[i]: " + tempComments[i]);
+                                console.log("commentThreads: " + commentThreads);
+                                var temp = this.getNestedThreadOfComments(tempComments[i]['id']);
+                                for (var j = 0; j < temp.length; j++) {
+                                    commentThreads.push(temp[j]);
+                                }
+                                // commentThreads = [...commentThreads, this.getNestedThreadOfComments(tempComments[i]['id'])];
+                                // commentThreadFull = 
+                            }
+
+                            for (var i = 0; i < commentThreads.length; i++) {
+                                console.log("commentThread[i]: " + commentThreads[i]);
+                            }
+                            // console.log("commentThreads.length: "+ commentThreads.length);
+                            console.log("this.state.masterComments: " + this.state.masterComments.length);
+
+
+                            CommentDataService.retrieveTopLevelCommentsByLessonId(this.state.lessonId)
+                                .then(
+                                    response => {
+
+                                        this.setState({ masterComments: response.data }, () => {
+
+                                            let commentThreadFull = []
+                                            var t = [...this.state.masterComments]
+                                            for (var i = 0; i < t.length; i++) {
+                                                // console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
+                                                // if(commentThreads.includes(this.state.masterComments[i]['id'])){
+                                                //     console.log("this.state.masterComments[i]['id']: " + this.state.masterComments[i]['id'])
+                                                //     commentThreadFull.push(this.state.masterComments[i]);
+                                                // }
+                                                console.log("t[i]['id']: " + JSON.stringify(t[i]['id']))
+
+
+                                                for (var j = 0; j < commentThreads.length; j++) {
+                                                    console.log("commentsThread[j]: " + commentThreads[j])
+                                                    console.log(t[i]['id'] == commentThreads[j]);
+                                                    if (t[i]['id'] == commentThreads[j]) {
+                                                        commentThreadFull.push(t[i])
+                                                    }
+                                                }
+                                            }
+                                            // let commentThreadFull = this.state.masterComments.filter(
+                                            //     a=>commentThreads.includes(a['id'])
+                                            // )
+
+
+                                            console.log("commentThreadFull: " + commentThreadFull);
+                                            this.setState({ comments: commentThreadFull }, () => {
+                                                console.log("filter ToRespond")
+                                                console.log("this.state.comments: " + this.state.comments);
+                                                // this.forceUpdate()
+                                                this.sortComments(sortBy);
+                                            });
+
+                                            // this.setState({ comments: commentArr }, () => {
+                                            //     // for (var i = 0; i < this.state.comments.length; i++) {
+                                            //     //     console.log("comment Threads: " + JSON.stringify(this.state.comments[i]))
+                                            //     // }
+                                            // });
+                                        })
+                                    }
+                                )
+
+                        } else {
+                            console.log("No comments to respond to, or have yet to repsond to")
+                            var temp = [...this.state.masterComments]
+                            this.setState({ comments: temp }, () => {
+                                this.sortComments(sortBy);
+                            });
+                        }
+
                     }
                 )
 
@@ -1178,7 +1350,7 @@ className="alert alert-warning" /> */}
     componentDidUpdate(prevProps, prevState) {
         if (prevState.followedCommentsId !== this.state.followedCommentsId) {
             console.log('pokemons state has changed.')
-            this.refreshComments(this.state.filterParameters);
+            this.refreshComments(this.state.filterParameters, this.state.sortParameters);
         }
     }
 
