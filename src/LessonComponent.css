@@ -18,3 +18,31 @@
     width: 13%;
     /* align-items: right; */
 }
+
+.marker{
+    border-radius: 13px;
+  background: #73AD21;
+  /* padding: 2px; */
+  /* font-size: 13px; */
+  width: 13px;
+  height: 15px;
+  margin-left: 10px;
+ 
+
+}
+
+
+.markerText{
+    /* border-radius: 15px; */
+  /* background: #73AD21; */
+  /* padding: 2px; */
+  font-size: 13px;
+  width: 10px;
+  height: 10px;
+  margin:5px;
+  color:white;
+}
+
+.answeredCheck{
+    margin-left: 5px;
+}
