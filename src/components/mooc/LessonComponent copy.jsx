@@ -12,6 +12,7 @@ import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
 import Modal from 'react-modal'
 import "../../LessonComponent.css"
 import UserFollowingDataService from '../../api/userfollowing/UserFollowingDataService'
+import HelloWorldService from '../../api/comment/HelloWorldService'
 
 // toast.configure()
 

@@ -14,6 +14,7 @@ import WelcomeComponent from './WelcomeComponent.jsx'
 import CommentComponent from './CommentComponent'
 import LessonComponent from './LessonComponent.jsx'
 import ListFeedbackComponent from './ListFeedbackComponent.jsx'
+import ListStudentsComponent from './ListStudentsComponent.jsx'
 import Lesson2Component from './Lesson2Component.jsx'
 import RegisterComponent from './RegisterComponent.jsx'
 import '../../MoocApp.css'
@@ -28,6 +29,7 @@ class MoocApp extends Component {
         const HeaderComponentWithNavigation = withNavigation(HeaderComponent);
         const ListCommentsComponentWithNavigation = withNavigation(ListCommentsComponent);
         const ListFeedbackComponentWithNavigation = withNavigation(ListFeedbackComponent);
+        const ListStudentsComponentWithNavigation = withNavigation(ListStudentsComponent);
         const CommentComponentWithParamsAndNavigation = withParams(withNavigation(CommentComponent));
         const RegisterComponentWithNavigation = withNavigation(RegisterComponent);
 
@@ -57,6 +59,11 @@ class MoocApp extends Component {
                         <Route path="/feedbacks" element={
                             <AuthenticatedRoute>
                                 <ListFeedbackComponentWithNavigation/>
+                            </AuthenticatedRoute>
+                        } />
+                        <Route path="/students" element={
+                            <AuthenticatedRoute>
+                                <ListStudentsComponentWithNavigation/>
                             </AuthenticatedRoute>
                         } />
                         <Route path="/logout" element={

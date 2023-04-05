@@ -9,6 +9,7 @@ import CommentComponent from './CommentComponent'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
+import HelloWorldService from '../../api/comment/HelloWorldService'
 
 // toast.configure()
 

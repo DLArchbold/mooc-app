@@ -12,6 +12,7 @@ import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
 import Modal from 'react-modal'
 import "../../LessonComponent.css"
 import UserFollowingDataService from '../../api/userfollowing/UserFollowingDataService'
+import HelloWorldService from '../../api/comment/HelloWorldService'
 
 // toast.configure()
 
@@ -1191,7 +1192,7 @@ className="alert alert-warning" /> */}
                                 if (cIds.includes(this.state.masterComments[i]['inResponseTo'])
                                     && this.state.masterComments[i]['username'] === this.state.username) {
                                     cIds = cIds.filter(id => {
-                                        id != this.state.masterComments[i]['inResponseTo'];
+                                        return id != this.state.masterComments[i]['inResponseTo'];
                                     })
                                 }
                             }
