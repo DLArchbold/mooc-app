@@ -24,12 +24,12 @@ class FeedbackDataService{
 
     retrieveAllStudentsForALesson(lessonId){
         let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/students/${lessonId}/lesson/`);
+            return axios.get(`${API_URL}/students/lessonId/${lessonId}/`);
     }
 
     retrieveAllStudentsForInterest(interest){
         let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/students/${interest}/interest/`);
+            return axios.get(`${API_URL}/students/interests/${interest}/`);
     }
 }
 
