@@ -77,6 +77,13 @@ class AuthenticationService {
 
     }
 
+
+    findUserByApplicationUserId(applicationUserId){
+        let API_URL = this.getUrl(this.urlType)
+        return axios.get(`${API_URL}/application_user/get/${applicationUserId}`);
+    }
+
+
     createUser(applicationUser){
         let API_URL = this.getUrl(this.urlType)
         return axios.post(`${API_URL}/application_user/create`, applicationUser);

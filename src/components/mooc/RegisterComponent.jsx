@@ -5,7 +5,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik'
 import '../../RegisterComponent.css'
 
 
-class LoginComponent extends Component {
+class RegisterComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -159,4 +159,4 @@ class LoginComponent extends Component {
 
 
 
-export default LoginComponent
+export default RegisterComponent

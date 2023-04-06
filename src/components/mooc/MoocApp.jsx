@@ -16,6 +16,12 @@ import LessonComponent from './LessonComponent.jsx'
 import ListFeedbackComponent from './ListFeedbackComponent.jsx'
 import Lesson2Component from './Lesson2Component.jsx'
 import RegisterComponent from './RegisterComponent.jsx'
+import CreateCourseComponent from './CreateCourseComponent.jsx'
+import CreateLessonComponent from './CreateLessonComponent.jsx'
+import ListCoursesComponent from './ListCoursesComponent.jsx'
+import CourseComponent from './CourseComponent.jsx'
+
+
 import '../../MoocApp.css'
 class MoocApp extends Component {
 
@@ -30,6 +36,10 @@ class MoocApp extends Component {
         const ListFeedbackComponentWithNavigation = withNavigation(ListFeedbackComponent);
         const CommentComponentWithParamsAndNavigation = withParams(withNavigation(CommentComponent));
         const RegisterComponentWithNavigation = withNavigation(RegisterComponent);
+        const CreateCourseComponentWithNavigation = withNavigation(CreateCourseComponent);
+        const CreateLessonComponentWithNavigation = withNavigation(CreateLessonComponent);
+        const ListCoursesComponentWithNavigation = withNavigation(ListCoursesComponent);
+        const CourseComponentWithParamsAndNavigation = withParams(withNavigation(CourseComponent));
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -51,12 +61,12 @@ class MoocApp extends Component {
                         } />
                         <Route path="/comments" element={
                             <AuthenticatedRoute>
-                                <ListCommentsComponentWithNavigation/>
+                                <ListCommentsComponentWithNavigation />
                             </AuthenticatedRoute>
                         } />
                         <Route path="/feedbacks" element={
                             <AuthenticatedRoute>
-                                <ListFeedbackComponentWithNavigation/>
+                                <ListFeedbackComponentWithNavigation />
                             </AuthenticatedRoute>
                         } />
                         <Route path="/logout" element={
@@ -66,23 +76,39 @@ class MoocApp extends Component {
                         } />
                         <Route path="/comments/:id" element={
                             <AuthenticatedRoute>
-                                <CommentComponentWithParamsAndNavigation/>
+                                <CommentComponentWithParamsAndNavigation />
                             </AuthenticatedRoute>
                         } />
-                        <Route path="/lesson" element = {
+                        <Route path="/lesson" element={
                             <AuthenticatedRoute>
-                                <LessonComponent/>
+                                <LessonComponent />
                             </AuthenticatedRoute>
-                        }/>
-                        <Route path="/lesson-2" element = {
+                        } />
+                        <Route path="/lesson-2" element={
                             <AuthenticatedRoute>
-                                <Lesson2Component/>
+                                <Lesson2Component />
                             </AuthenticatedRoute>
-                        }/>
+                        } />
                         <Route path="/register" element={
                             <RegisterComponentWithNavigation />
                         } />
                         <Route path="*" element={<ErrorComponent />} />
+                        <Route path="/createCourse" element={
+                            <CreateCourseComponentWithNavigation />
+                        } />
+                        <Route path="/createLesson" element={
+                            <CreateLessonComponentWithNavigation />
+                        } />
+                        <Route path="/listallcourses" element={
+                            <ListCoursesComponentWithNavigation />
+                        } />
+
+                        <Route path="/course/:courseId" element={
+                            <AuthenticatedRoute>
+                                <CourseComponentWithParamsAndNavigation />
+                            </AuthenticatedRoute>
+                        } />
+
                     </Routes>
                     <FooterComponent />
                 </Router>
