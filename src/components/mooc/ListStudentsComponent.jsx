@@ -89,7 +89,7 @@ class ListStudentsComponent extends Component {
                                     <Field className="form-control" type="text" name="interests" />
                                 </fieldset>
                                 <fieldset className="form-group">
-                                    <label>Filter by lesson</label>
+                                    <label>Filter by course ID</label>
                                     <Field className="form-control" type="text" name="lesson" />
                                 </fieldset>
                                 <button className="btn btn-success filter" type="submit">List students</button>
@@ -107,7 +107,7 @@ class ListStudentsComponent extends Component {
                         <thead>
                             <tr>
                                 <th>Student name</th>
-                                <th>Lesson ID</th>
+                                <th>Course ID</th>
                                 <th>Student interests</th>
                                 <th></th>
                             </tr>

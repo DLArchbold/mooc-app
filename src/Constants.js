@@ -1,7 +1,9 @@
 /* For Best Practices https://create-react-app.dev/docs/adding-custom-environment-variables/*/
-export const REMOTE_API_URL = 'http://ec2-54-237-219-36.compute-1.amazonaws.com:5000'
+export const REMOTE_API_URL = 'http://ec2-100-26-240-90.compute-1.amazonaws.com:5000'
 export const LOCAL_API_URL = "http://localhost:5000"
 
+export const FLAG = "r"
+// export const FLAG = "l"
 
 // export const JPA_API_URL = `${API_URL}/jpa`
 

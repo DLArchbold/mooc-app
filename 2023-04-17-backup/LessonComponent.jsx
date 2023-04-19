@@ -380,7 +380,7 @@ class LessonComponent extends Component {
                                             </span>
                                             <h5 className="card-title" align="left"> {comment.username} - (comment id: {comment.id})
                                                 {(comment.commentType == 'question') && (<span className='marker'><span className='markerText'>Question</span></span>)}
-                                                {(comment.commentType == 'question') && (<span style={{ marginLeft: "5px" }}>Answered:</span>)}
+                                                {(comment.commentType == 'question') && (<span  style={{ marginLeft: "5px" }}>Answered:</span>)}
                                                 {(comment.commentType == 'question') &&
                                                     (<input onClick={() => this.checkAnswered(comment.username, comment.id, comment.description,
                                                         comment.urgencyLevel, comment.inResponseTo, comment.votes,
@@ -388,7 +388,7 @@ class LessonComponent extends Component {
                                                         checked={this.handleChecked(comment.id)}
                                                         // style={{ defaultChecked: this.state.checked }}
                                                         type="checkbox"
-                                                        class="answeredCheck"
+                                                        className="answeredCheck"
                                                         id={`exampleCheck${comment.id}`} />
                                                     )}
                                             </h5>
@@ -797,7 +797,7 @@ className="alert alert-warning" /> */}
 
         //If there are more than 1 feedback forms to be displayed, remove first one.
         //Remove first interval.
-        // this.counterForFeedbackForm()
+        this.counterForFeedbackForm()
 
 
     }
@@ -1253,7 +1253,7 @@ className="alert alert-warning" /> */}
                                             // )
 
 
-                                            console.log("commentThreadFull: " + commentThreadFull);
+                                            console.log("commentThreadFull: " + JSON.stringify(commentThreadFull));
                                             this.setState({ comments: commentThreadFull }, () => {
                                                 console.log("filter ToRespond")
                                                 console.log("this.state.comments: " + this.state.comments);
@@ -1423,25 +1423,6 @@ className="alert alert-warning" /> */}
                         // console.log("followed comments" + followedCommentsIdArr)
                         // this.forceUpdate();
                     } else {
-
-                        console.log("in getAndParseFollowedComments")
-                        var uf = []
-
-
-                        this.setState({ userFollow: uf }, () => {
-                            console.log("userFollow:" + this.state.userFollow)
-                            var followedCommentsIdArr = [];
-                            let userFollowArr = [...this.state.userFollow];
-
-                            for (var i = 0; i < userFollowArr.length; i++) {
-                                // console.log("userFollowArr[i]: " + userFollowArr[i])
-                                followedCommentsIdArr.push(userFollowArr[i]['commentId'])
-                                console.log("followedCommentsIdArr: " + followedCommentsIdArr[i])
-                            }
-                            this.setState({ followedCommentsId: [...followedCommentsIdArr] }, () => {
-                                console.log("this.state.followedCommentsId: " + this.state.followedCommentsId)
-                            });
-                        })
                         console.log("User not following any comments in this lesson")
                     }
 
@@ -1479,91 +1460,88 @@ className="alert alert-warning" /> */}
         // console.log("this is description " + test)
         // console.log("state.id" + this.state.id);
 
-        this.setState({ targetDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ') }, () => {
 
-            if (this.state.addComment === true && this.state.addCommentReply === false) {
-                console.log("username: " + username)
-                console.log("replying to lesson")
-                // console.log("comment type:" + commentType);
-                //Escape single quote characters to prevent gibberish from being inserted into mysql
-
+        if (this.state.addComment === true && this.state.addCommentReply === false) {
+            console.log("username: " + username)
+            console.log("replying to lesson")
+            // console.log("comment type:" + commentType);
+            //Escape single quote characters to prevent gibberish from being inserted into mysql
 
 
-                CommentDataService.createComment(username, {
-                    //Use state values for those which are carried over from ListComments
-                    //Use values. if obtained from Formik.
-                    //
-                    id: -1,
-                    description: desc,
-                    urgencyLevel: values.urgencyLevel,
-                    inResponseTo: 0, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
-                    targetDate: this.state.targetDate,
-                    username: this.state.username,
-                    lessonId: this.state.lessonId,
-                    commentType: commentType,
-                    answered: answered
-                }).then(
-                    //When successfully update redirect user to list all Comments
-                    () => {
-                        // this.props.navigate("/comments")
-                        console.log("add lesson comment success")
-                        this.setState({
-                            successMessage: "Add lesson comment success"
-                        }, () => {
-                            console.log("comment type:" + commentType);
-                        })
-                        this.componentDidMount()
-                    }
 
-                ).catch(
-                    error => this.setState({
-                        successMessage: error.response.data.message
+            CommentDataService.createComment(username, {
+                //Use state values for those which are carried over from ListComments
+                //Use values. if obtained from Formik.
+                //
+                id: -1,
+                description: desc,
+                urgencyLevel: values.urgencyLevel,
+                inResponseTo: 0, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
+                targetDate: this.state.targetDate,
+                username: this.state.username,
+                lessonId: this.state.lessonId,
+                commentType: commentType,
+                answered: answered
+            }).then(
+                //When successfully update redirect user to list all Comments
+                () => {
+                    // this.props.navigate("/comments")
+                    console.log("add lesson comment success")
+                    this.setState({
+                        successMessage: "Add lesson comment success"
+                    }, () => {
+                        console.log("comment type:" + commentType);
                     })
-                )
-            }
+                    this.componentDidMount()
+                }
 
-            if (this.state.addComment === false && this.state.addCommentReply === true) {
-                console.log("replying to comment")
-                console.log("username: " + username)
-                // console.log("comment type:" + commentType);
-                CommentDataService.createComment(username, {
-                    //Use state values for those which are carried over from ListComments
-                    //Use values. if obtained from Formik.
-                    //
-                    id: -1,
-                    description: desc,
-                    urgencyLevel: values.urgencyLevel,
-                    inResponseTo: this.state.inResponseTo, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
-                    targetDate: this.state.targetDate,
-                    username: this.state.username,
-                    lessonId: this.state.lessonId,
-                    commentType: commentType,
-                    answered: answered
-                }).then(
-                    //When successfully replied to comment
-                    () => {
-                        // this.props.navigate("/comments")
-                        console.log("replying to comment success")
-                        this.setState({
-                            successMessage: "replying to comment success"
-                        }, () => {
-                            console.log("comment type:" + commentType);
-                        })
-                        this.componentDidMount()
-                    }
+            ).catch(
+                error => this.setState({
+                    successMessage: error.response.data.message
+                })
+            )
+        }
 
-                ).catch(
-                    error => this.setState({
-                        successMessage: error.response.data.message
+        if (this.state.addComment === false && this.state.addCommentReply === true) {
+            console.log("replying to comment")
+            console.log("username: " + username)
+            // console.log("comment type:" + commentType);
+            CommentDataService.createComment(username, {
+                //Use state values for those which are carried over from ListComments
+                //Use values. if obtained from Formik.
+                //
+                id: -1,
+                description: desc,
+                urgencyLevel: values.urgencyLevel,
+                inResponseTo: this.state.inResponseTo, //Set inResponseTo to 0 for all top-level replies to a lesson; vary when replying to a comment
+                targetDate: this.state.targetDate,
+                username: this.state.username,
+                lessonId: this.state.lessonId,
+                commentType: commentType,
+                answered: answered
+            }).then(
+                //When successfully replied to comment
+                () => {
+                    // this.props.navigate("/comments")
+                    console.log("replying to comment success")
+                    this.setState({
+                        successMessage: "replying to comment success"
+                    }, () => {
+                        console.log("comment type:" + commentType);
                     })
-                )
-            }
+                    this.componentDidMount()
+                }
 
-            //Providing feedback
-            toast.dismiss()
-            console.log("in onSubmit")
-        })
+            ).catch(
+                error => this.setState({
+                    successMessage: error.response.data.message
+                })
+            )
+        }
 
+        //Providing feedback
+        toast.dismiss()
+        console.log("in onSubmit")
     }
 
 

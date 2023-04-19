@@ -1,9 +1,9 @@
 
 
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
 class FeedbackDataService{
-    urlType = "l";
+    urlType = FLAG;
 
     
     getUrl(urlType){
