@@ -21,7 +21,7 @@ import CreateCourseComponent from './CreateCourseComponent.jsx'
 import CreateLessonComponent from './CreateLessonComponent.jsx'
 import ListCoursesComponent from './ListCoursesComponent.jsx'
 import CourseComponent from './CourseComponent.jsx'
-
+import ProfilePageComponent from './ProfilePageComponent.jsx'
 
 import '../../MoocApp.css'
 class MoocApp extends Component {
@@ -42,6 +42,8 @@ class MoocApp extends Component {
         const CreateLessonComponentWithNavigation = withNavigation(CreateLessonComponent);
         const ListCoursesComponentWithNavigation = withNavigation(ListCoursesComponent);
         const CourseComponentWithParamsAndNavigation = withParams(withNavigation(CourseComponent));
+        const ProfilePageComponentWithNavigation = withNavigation(ProfilePageComponent);
+        const ProfilePageComponentWithParamsAndNavigation = withParams(withNavigation(ProfilePageComponent));
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -73,7 +75,7 @@ class MoocApp extends Component {
                         } />
                         <Route path="/students" element={
                             <AuthenticatedRoute>
-                                <ListStudentsComponentWithNavigation/>
+                                <ListStudentsComponentWithNavigation />
                             </AuthenticatedRoute>
                         } />
                         <Route path="/logout" element={
@@ -115,6 +117,21 @@ class MoocApp extends Component {
                                 <CourseComponentWithParamsAndNavigation />
                             </AuthenticatedRoute>
                         } />
+                        <Route path="/course/:courseId/:instructorId" element={
+                            <AuthenticatedRoute>
+                                <CourseComponentWithParamsAndNavigation />
+                            </AuthenticatedRoute>
+                        } />
+
+
+                        <Route path="/profilepage" element={
+                            <ProfilePageComponentWithNavigation />
+                        } />
+
+                        <Route path="/profilepage/:applicationUserId" element={
+                            <ProfilePageComponentWithParamsAndNavigation />
+                        } />
+
 
                     </Routes>
                     <FooterComponent />

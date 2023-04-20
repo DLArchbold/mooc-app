@@ -12,6 +12,7 @@ class CourseComponent extends Component {
         super(props)
         this.state = {
             courseId: this.props.params.courseId,
+            instructorId: this.props.params.instructorId,
             description: "",
             course: {},
             enrolled: false,
@@ -28,6 +29,9 @@ class CourseComponent extends Component {
     componentDidMount() {
         // var id = this.state.courseId;
         // id = id.substring(0, id.indexOf("%"))
+
+        console.log("this.state.this.props.params.instructorId: " + this.props.params.instructorId)
+
         CourseDataService.retrieveCourseByCourseId(this.state.courseId)
             .then(
                 (response) => {
@@ -131,10 +135,10 @@ class CourseComponent extends Component {
                 {this.state.instructorName}
                 <br></br>
                 <br></br>
-                {!this.state.enrolled && (<button className="btn btn-success" onClick={() => this.enrollInCourse(this.state.courseId)}>Enroll</button>)}
-                {this.state.enrolled && (<button className="btn btn-success" onClick={() => this.unEnrollInCourse(this.state.courseId)}>Un-enroll</button>)}
+                {(!this.state.enrolled && this.state.instructorId === undefined) && (<button className="btn btn-success" onClick={() => this.enrollInCourse(this.state.courseId)}>Enroll</button>)}
+                {(this.state.enrolled && this.state.instructorId === undefined) && (<button className="btn btn-success" onClick={() => this.unEnrollInCourse(this.state.courseId)}>Un-enroll</button>)}
                 <br></br>
-                {this.state.enrolled && <div className="alert alert-success register">Already enrolled previously   </div>}
+                {(this.state.enrolled&& this.state.instructorId === undefined) && <div className="alert alert-success register">Already enrolled previously   </div>}
 
 
 

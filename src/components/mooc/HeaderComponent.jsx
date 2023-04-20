@@ -17,12 +17,13 @@ class HeaderComponent extends Component {
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/welcome/cs8803">Home</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/comments">Comments</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/feedbacks">Feedback</Link></li>}
-                        {isUserLoggedIn && <li ><Link className="nav-link"to="/students">Search Students</Link></li>}
+                        {isUserLoggedIn && <li ><Link className="nav-link" to="/students">Search Students</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/lesson">Lesson</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/lesson-2">Lesson 2</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/listallcourses">List all courses</Link></li>}
                     </ul>
                     <ul className="navbar-nav navbar-collapse justify-content-end">
+                        {isUserLoggedIn && <li ><Link className="nav-link" to="/profilepage">Profile Page</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/createLesson">Create Lesson</Link></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/createCourse">Create Course</Link></li>}
                         {!isUserLoggedIn && <li ><Link className="nav-link" to="/login">Login</Link></li>}

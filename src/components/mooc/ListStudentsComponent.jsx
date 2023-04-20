@@ -64,6 +64,11 @@ class ListStudentsComponent extends Component {
         )
     }
 
+
+    viewProfile(applicationUserId){
+        this.props.navigate(`/profilepage/${applicationUserId}`)
+    }
+
     render() {
 
         let { lesson, interests} = this.state
@@ -109,6 +114,7 @@ class ListStudentsComponent extends Component {
                                 <th>Student name</th>
                                 <th>Course ID</th>
                                 <th>Student interests</th>
+                                <th>View profile</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -120,6 +126,7 @@ class ListStudentsComponent extends Component {
                                             <td>{student.name}</td>
                                             <td>{student.lessonId}</td>
                                             <td>{student.interests}</td>
+                                            <td>{(<button className="btn btn-success" onClick={() => this.viewProfile(student.id)}>View profile</button>)}</td>
                                         </tr>
                                 )
                             }

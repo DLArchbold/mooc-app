@@ -135,6 +135,7 @@ class ListCoursesComponent extends Component {
                     EnrolledDataService.retrieveEnrolledByUsername(username)
                         .then(
                             response => {
+                                
                                 console.log("response: " + JSON.stringify(response.data))
                                 if (response.data.length != 0) {
                                     console.log("not undefined")
@@ -161,10 +162,13 @@ class ListCoursesComponent extends Component {
                                     // return true;
                                 } else {
                                     console.log("undefined")
+                                    this.refreshCourses()
                                     return false;
                                 }
                             }
                         )
+
+
                 }
             )
 
