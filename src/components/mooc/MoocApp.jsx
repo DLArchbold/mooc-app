@@ -22,6 +22,7 @@ import CreateLessonComponent from './CreateLessonComponent.jsx'
 import ListCoursesComponent from './ListCoursesComponent.jsx'
 import CourseComponent from './CourseComponent.jsx'
 import ProfilePageComponent from './ProfilePageComponent.jsx'
+import LessonComponentTemplate from './LessonComponentTemplate.jsx'
 
 import '../../MoocApp.css'
 class MoocApp extends Component {
@@ -44,6 +45,7 @@ class MoocApp extends Component {
         const CourseComponentWithParamsAndNavigation = withParams(withNavigation(CourseComponent));
         const ProfilePageComponentWithNavigation = withNavigation(ProfilePageComponent);
         const ProfilePageComponentWithParamsAndNavigation = withParams(withNavigation(ProfilePageComponent));
+        const LessonComponentWithParamsAndNavigation = withParams(withNavigation(LessonComponentTemplate));
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -98,6 +100,25 @@ class MoocApp extends Component {
                                 <Lesson2Component />
                             </AuthenticatedRoute>
                         } />
+
+
+
+
+
+
+                        <Route path="/lesson/:lessonId" element={
+                            <AuthenticatedRoute>
+                                <LessonComponentWithParamsAndNavigation />
+                            </AuthenticatedRoute>
+                        } />
+
+
+
+
+
+
+
+
                         <Route path="/register" element={
                             <RegisterComponentWithNavigation />
                         } />
@@ -122,6 +143,16 @@ class MoocApp extends Component {
                                 <CourseComponentWithParamsAndNavigation />
                             </AuthenticatedRoute>
                         } />
+
+                        <Route path="/course/viewFromListCourseComponent/:courseId" element={
+                            <AuthenticatedRoute>
+                                <CourseComponentWithParamsAndNavigation />
+                            </AuthenticatedRoute>
+                        } />
+
+
+
+
 
 
                         <Route path="/profilepage" element={

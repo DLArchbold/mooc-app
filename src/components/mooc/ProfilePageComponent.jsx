@@ -6,6 +6,7 @@ import moment from 'moment/moment'
 
 import EnrolledDataService from '../../api/enrolled/EnrolledDataService.js'
 import CourseDataService from '../../api/course/CourseDataService.js'
+import BarChart from './BarChart.js'
 
 class ProfilePageComponent extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ class ProfilePageComponent extends Component {
         // this.addCommentClicked = this.addCommentClicked.bind(this)
         this.unenrollInCourse = this.unenrollInCourse.bind(this)
         this.determineCreatedCourses = this.determineCreatedCourses.bind(this)
+        this.returnD3Chart = this.returnD3Chart.bind(this)
 
 
     }
@@ -49,7 +51,7 @@ class ProfilePageComponent extends Component {
         console.log("componentDidMount")
 
 
-        
+
         if (this.state.applicationUserId === undefined) {
             //if viewing own profile using HeaderComponent.jsx Profile Page link
             this.setState({
@@ -80,30 +82,30 @@ class ProfilePageComponent extends Component {
 
 
             AuthenticationService.findUserByApplicationUserId(this.state.applicationUserId)
-            .then(
-                response => {
-                    this.setState({
-                        interests: response.data.interests
-                    })
+                .then(
+                    response => {
+                        this.setState({
+                            interests: response.data.interests
+                        })
 
-                    this.setState({
-                        appplicationUserDetails: response.data
-                    }, () => {
-                        console.log("user details: " + typeof (this.state.appplicationUserDetails.userType))
-                        
-                    })
-                }
-            )
+                        this.setState({
+                            appplicationUserDetails: response.data
+                        }, () => {
+                            console.log("user details: " + typeof (this.state.appplicationUserDetails.userType))
+
+                        })
+                    }
+                )
 
 
         }
 
 
+        this.returnD3Chart();
 
 
 
 
-        
 
         console.log(this.state)
     }
@@ -241,7 +243,19 @@ class ProfilePageComponent extends Component {
             )
     }
 
+    returnD3Chart() {
+        return (
+            <BarChart
+                data={[12, 5, 6, 6, 9, 10]}
+                width={700}
+                height={300} />
+        )
+    }
+    // const myContainer = useRef(null);
 
+    // useEffect(() => {
+    //     console.log("myContainer..", myContainer.current);
+    // });
     render() {
         return (
 
@@ -260,21 +274,26 @@ class ProfilePageComponent extends Component {
                                         <th>Course title</th>
                                         <th>Course description</th>
                                         <th>Instructor</th>
-                                        <th>Unenroll in course</th>
+                                        <th>Unenroll or view course details</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         this.state.enrolledCourses.map(
                                             course =>
-                                                <tr key={course.id}>
-                                                    <td>{course.title}</td>
-                                                    <td>{course.description}</td>
-                                                    <td>{course.instructorApplicationUserId}</td>
+                                                <>
+                                                    <tr key={course.id}>
+                                                        <td>{course.title}</td>
+                                                        <td>{course.description}</td>
+                                                        <td>{course.instructorApplicationUserId}</td>
 
-                                                    <td>{(<button className="btn btn-success" onClick={() => this.unenrollInCourse(course.id)}>Unenroll</button>)}</td>
+                                                        <td>{(<button className="btn btn-success" onClick={() => this.unenrollInCourse(course.id)}>Unenroll/view</button>)}</td>
 
-                                                </tr>
+                                                    </tr>
+                                                    {/* <tr>
+                                                    {(<button className="btn btn-success" onClick={() => this.unenrollInCourse(course.id)}>View course </button>)}
+                                                    </tr> */}
+                                                </>
                                         )
                                     }
                                 </tbody>
@@ -340,6 +359,13 @@ class ProfilePageComponent extends Component {
 
                         </div>
                     </>)
+                }
+
+                <br></br>
+
+                <div className='viz' ></div>
+                {
+                    this.returnD3Chart()
                 }
 
 

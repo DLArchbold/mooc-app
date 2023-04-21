@@ -72,7 +72,7 @@ class ListCoursesComponent extends Component {
 
     enrollInCourse(courseId) {
 
-        this.props.navigate(`/course/${courseId}`)
+        this.props.navigate(`/course/viewFromListCourseComponent/${courseId}`)
         // var enrolled = {
         //     username: AuthenticationService.getLoggedInUserName(),
         //     courseId: id

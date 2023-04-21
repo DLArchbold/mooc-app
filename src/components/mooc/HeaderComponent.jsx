@@ -8,6 +8,7 @@ class HeaderComponent extends Component {
     render() {
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
+        const loggedInUsername = AuthenticationService.getLoggedInUserName();
         console.log(isUserLoggedIn);
         return (
             <header>
@@ -28,6 +29,7 @@ class HeaderComponent extends Component {
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/createCourse">Create Course</Link></li>}
                         {!isUserLoggedIn && <li ><Link className="nav-link" to="/login">Login</Link></li>}
                         {!isUserLoggedIn && <li ><Link className="nav-link" to="/register">Register</Link></li>}
+                        {isUserLoggedIn && <li><text style={{color:"white"}}>{loggedInUsername}</text></li>}
                         {isUserLoggedIn && <li ><Link className="nav-link" to="/logout" onClick={AuthenticationService.logout}>Logout</Link></li>}
                     </ul>
                 </nav>

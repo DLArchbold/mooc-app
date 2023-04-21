@@ -12,6 +12,7 @@ import FeedbackDataService from '../../api/feedback/FeedbackDataService.js'
 import Modal from 'react-modal'
 import "../../LessonComponent.css"
 import UserFollowingDataService from '../../api/userfollowing/UserFollowingDataService'
+import LessonDataService from '../../api/lesson/LessonDataService'
 
 // toast.configure()
 
@@ -24,6 +25,7 @@ class LessonComponent extends Component {
         this.retrieveWelcomeMessage = this.retrieveWelcomeMessage.bind(this)
 
         this.state = {
+            
             welcomeMessage: '',
             addComment: Boolean(false),
             addCommentReply: Boolean(false),
@@ -41,7 +43,8 @@ class LessonComponent extends Component {
             satisfactionFeedback: "",
             intervalIDs: [],
             currentTopLevelCommentId: 0,
-            lessonId: 1,
+            lessonId: this.props.params.lessonId,
+            lessonDetails:{},
             submittedFeedback: false,
             modalIsOpen: false,
             expandMenu: false,
@@ -205,8 +208,8 @@ class LessonComponent extends Component {
                     {/* <img src={require('../../document.PNG')} height={700} width={600} align="center" /> */}
 
                     <iframe width="640" height="480"
-                        src="https://www.youtube.com/embed/L3LMbpZIKhQ?list=PLB7540DEDD482705B"
-                        title="Lec 1 | MIT 6.042J Mathematics for Computer Science, Fall 2010" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
+                        src={this.state.lessonDetails.videoLink}
+                        title="" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
                     </iframe>
 
                 </div>
@@ -787,7 +790,17 @@ className="alert alert-warning" /> */}
         })
 
 
-
+        LessonDataService.retrieveLessonById(this.state.lessonId)
+        .then(
+            response=>{
+                console.log("In retrieveLessonById")
+                if(response!==undefined){
+                    this.setState({lessonDetails:response.data})
+                }else{
+                    console.log("lesson not found")
+                }
+            }
+        )
 
 
 
@@ -939,8 +952,8 @@ className="alert alert-warning" /> */}
         }
     }
 
+    // console.log("in refresh comments x")
     refreshComments(filterParams, sortParams) {
-        console.log("in refresh comments x")
         let username = filterParams['email'];
         let email = filterParams['email'];
         let filterBy = filterParams['filterBy'];

@@ -22,12 +22,12 @@ class LessonDataService {
     //     return axios.get(`${API_URL}/users/comments`);
     // }
 
-    // retrieveComment(name, id){
-    //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.get(`${API_URL}/users/${name}/comments/${id}`);
+    retrieveLessonById(lessonId){
+        let API_URL = this.getUrl(this.urlType)
+        return axios.get(`${API_URL}/lesson/get/${lessonId}`);
 
 
-    // }
+    }
 
     retrieveLessonsByCourseId(courseId) {
         let API_URL = this.getUrl(this.urlType);

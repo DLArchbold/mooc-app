@@ -6,19 +6,22 @@ import AuthenticationService from './AuthenticationService'
 import CommentDataService from '../../api/comment/CommentDataService.js'
 import CourseDataService from '../../api/course/CourseDataService'
 import EnrolledDataService from '../../api/enrolled/EnrolledDataService'
-
+import LessonDataService from '../../api/lesson/LessonDataService'
+import { useHistory, useLocation } from 'react-router-dom';
 class CourseComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
             courseId: this.props.params.courseId,
             instructorId: this.props.params.instructorId,
+            fromListCourseComponent: "",
             description: "",
             course: {},
             enrolled: false,
-            enrolledId:"",
+            enrolledId: "",
             instructorName: "",
-            username: AuthenticationService.getLoggedInUserName()
+            username: AuthenticationService.getLoggedInUserName(),
+            relatedLessons: []
         }
 
         // this.onSubmit = this.onSubmit.bind(this)
@@ -30,7 +33,19 @@ class CourseComponent extends Component {
         // var id = this.state.courseId;
         // id = id.substring(0, id.indexOf("%"))
 
-        console.log("this.state.this.props.params.instructorId: " + this.props.params.instructorId)
+        let x = window.location.href.indexOf("viewFromListCourseComponent") === -1;
+        // console.log("window.location.href: "+ x)
+        if (x === false) {
+            //viewing from ListCourseComponent, do not display buttons to view lessons
+            this.setState({
+                fromListCourseComponent: true
+            })
+        } else {
+            this.setState({
+                fromListCourseComponent: false
+            })
+        }
+        console.log("this.state.props.params.instructorId: " + this.props.params.instructorId)
 
         CourseDataService.retrieveCourseByCourseId(this.state.courseId)
             .then(
@@ -52,6 +67,7 @@ class CourseComponent extends Component {
                                         instructorName: response.data['email']
                                     }, () => {
                                         console.log("this.state.instructorName : " + this.state.instructorName)
+                                        this.getAndDisplayRelatedLessons();
                                     })
                                 }
                             )
@@ -67,15 +83,17 @@ class CourseComponent extends Component {
                         .then(
                             response => {
 
-                               
+
                                 if (response.data.length == 0) {
                                     // console.log("1 " + response.data)
                                     this.setState({ enrolled: false })
                                 } else {
                                     // console.log("2 " + response.data)
                                     // console.log(JSON.stringify(response.data))
-                                    this.setState({ enrolled: true,
-                                    enrolledId: response.data[0]['id'] },()=>{
+                                    this.setState({
+                                        enrolled: true,
+                                        enrolledId: response.data[0]['id']
+                                    }, () => {
                                         console.log("enrolledId: " + this.state.enrolledId)
                                     })
                                 }
@@ -99,8 +117,10 @@ class CourseComponent extends Component {
         EnrolledDataService.createEnrolled(enrolled)
             .then(
                 response => {
-                    this.setState({enrolled: true,
-                    enrolledId: response.data['id']},()=>{
+                    this.setState({
+                        enrolled: true,
+                        enrolledId: response.data['id']
+                    }, () => {
                         console.log(JSON.stringify(response.data))
                     })
                 }
@@ -116,13 +136,48 @@ class CourseComponent extends Component {
         EnrolledDataService.deleteEnrolled(this.state.enrolledId)
             .then(
                 response => {
-                    this.setState({enrolled: false},()=>{
+                    this.setState({ enrolled: false }, () => {
 
                     })
                 }
             )
     }
 
+    getAndDisplayRelatedLessons() {
+
+        // return (
+        //     <>
+
+        //         <h2>Lessons in this course</h2>
+
+        //     </>
+
+        // )
+
+
+        if (this.state.enrolled === true) {
+            LessonDataService.retrieveLessonsByCourseId(this.state.courseId)
+                .then(
+                    response => {
+
+
+                        if (response !== undefined) {
+                            console.log('getAndDisplayRelatedLessons-true')
+
+                            this.setState({ relatedLessons: response.data })
+
+                        } else {
+                            console.log('getAndDisplayRelatedLessons-false')
+                        }
+                    }
+                )
+
+        }
+    }
+
+    goToLesson(lessonId) {
+        this.props.navigate(`/lesson/${lessonId}`)
+    }
 
     render() {
         return (
@@ -131,14 +186,33 @@ class CourseComponent extends Component {
                 {this.state.course['title']}
                 <h2>Course description</h2>
                 {this.state.course['description']}
+
+                {/* Only display buttons to lessons if navigating from /profilepage and not /listallcourses */}
+                {(this.state.relatedLessons !== [] && this.state.fromListCourseComponent == false) && (<h2>Related lessons</h2>)}
+                {
+                    (this.state.fromListCourseComponent === false) &&
+                    (this.state.relatedLessons.map(
+                        relatedLesson =>
+                            <>
+                                <button className="btn btn-info" onClick={() => this.goToLesson(relatedLesson.id)}>Lesson number of course: {relatedLesson.lessonNumber}<br></br> {relatedLesson.description}</button>
+                                <br></br>
+                                <br></br>
+                            </>
+
+
+                    ))
+
+
+                }
                 <h2>Instructor</h2>
                 {this.state.instructorName}
                 <br></br>
                 <br></br>
                 {(!this.state.enrolled && this.state.instructorId === undefined) && (<button className="btn btn-success" onClick={() => this.enrollInCourse(this.state.courseId)}>Enroll</button>)}
-                {(this.state.enrolled && this.state.instructorId === undefined) && (<button className="btn btn-success" onClick={() => this.unEnrollInCourse(this.state.courseId)}>Un-enroll</button>)}
+                {(this.state.enrolled && this.state.instructorId === undefined) && (<button className="btn btn-danger" onClick={() => this.unEnrollInCourse(this.state.courseId)}>Un-enroll</button>)}
                 <br></br>
-                {(this.state.enrolled&& this.state.instructorId === undefined) && <div className="alert alert-success register">Already enrolled previously   </div>}
+                <br></br>
+                {(this.state.enrolled && this.state.instructorId === undefined) && <div className="alert alert-success register">Already enrolled previously   </div>}
 
 
 
