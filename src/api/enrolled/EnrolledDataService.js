@@ -35,6 +35,12 @@ class EnrolledDataService{
   
     }
 
+    retrieveEnrolledByCourseId(courseId){
+        let API_URL = this.getUrl(this.urlType);
+        return axios.get(`${API_URL}/enrolled/get/getByCourseId/${courseId}`)
+  
+    }
+
     // retrieveTopLevelCommentsByLessonId(lessonId){
     //     let API_URL = this.getUrl(this.urlType);
     //     return axios.get(`${API_URL}/users/comments/${lessonId}/all/toplevel`)

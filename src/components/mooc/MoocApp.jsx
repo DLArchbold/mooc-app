@@ -23,6 +23,7 @@ import ListCoursesComponent from './ListCoursesComponent.jsx'
 import CourseComponent from './CourseComponent.jsx'
 import ProfilePageComponent from './ProfilePageComponent.jsx'
 import LessonComponentTemplate from './LessonComponentTemplate.jsx'
+import DashboardComponent from './DashboardComponent.js'
 
 import '../../MoocApp.css'
 class MoocApp extends Component {
@@ -46,6 +47,7 @@ class MoocApp extends Component {
         const ProfilePageComponentWithNavigation = withNavigation(ProfilePageComponent);
         const ProfilePageComponentWithParamsAndNavigation = withParams(withNavigation(ProfilePageComponent));
         const LessonComponentWithParamsAndNavigation = withParams(withNavigation(LessonComponentTemplate));
+        const DashboardComponentWithParamsAndNavigation = withParams(withNavigation(DashboardComponent));
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -151,6 +153,13 @@ class MoocApp extends Component {
                         } />
 
 
+
+
+                        <Route path="/course/dashboard/:courseId" element={
+                            <AuthenticatedRoute>
+                                <DashboardComponentWithParamsAndNavigation />
+                            </AuthenticatedRoute>
+                        } />
 
 
 

@@ -27,6 +27,25 @@ class FeedbackDataService{
         
     }
 
+    retreieveFeedbackByCourseGroupedByLesson(courseId){
+        let API_URL = this.getUrl(this.urlType)
+        return axios.get(`${API_URL}/feedback/getFeedbackForEachLessonInCourse/${courseId}`)
+    }
+
+    // retreieveFeedbackByCourseGroupedByLessonByDates(courseId, startDate, endDate){
+    //     let API_URL = this.getUrl(this.urlType)
+
+    //     if(startDate === ""){
+    //         startDate = "undefined"
+    //     }
+    //     if(endDate===""){
+    //         endDate = "undefined"
+    //     }
+    //     return axios.get(`${API_URL}/feedback/getFeedbackForEachLessonInCourse/${courseId}/${startDate}/${endDate}`)
+    // }
+
+
+
     deleteFeedback(lessonId, feedbackId){
         let API_URL = this.getUrl(this.urlType)
             return axios.delete(`${API_URL}/${lessonId}/feedback/${feedbackId}`);
@@ -40,6 +59,9 @@ class FeedbackDataService{
         
         
     }
+
+
+
 }
 
 export default new FeedbackDataService()

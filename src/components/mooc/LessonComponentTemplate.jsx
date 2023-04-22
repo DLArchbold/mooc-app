@@ -25,7 +25,7 @@ class LessonComponent extends Component {
         this.retrieveWelcomeMessage = this.retrieveWelcomeMessage.bind(this)
 
         this.state = {
-            
+
             welcomeMessage: '',
             addComment: Boolean(false),
             addCommentReply: Boolean(false),
@@ -44,7 +44,7 @@ class LessonComponent extends Component {
             intervalIDs: [],
             currentTopLevelCommentId: 0,
             lessonId: this.props.params.lessonId,
-            lessonDetails:{},
+            lessonDetails: {},
             submittedFeedback: false,
             modalIsOpen: false,
             expandMenu: false,
@@ -791,16 +791,16 @@ className="alert alert-warning" /> */}
 
 
         LessonDataService.retrieveLessonById(this.state.lessonId)
-        .then(
-            response=>{
-                console.log("In retrieveLessonById")
-                if(response!==undefined){
-                    this.setState({lessonDetails:response.data})
-                }else{
-                    console.log("lesson not found")
+            .then(
+                response => {
+                    console.log("In retrieveLessonById")
+                    if (response !== undefined) {
+                        this.setState({ lessonDetails: response.data })
+                    } else {
+                        console.log("lesson not found")
+                    }
                 }
-            }
-        )
+            )
 
 
 
@@ -1729,7 +1729,7 @@ className="alert alert-warning" /> */}
                                             <Field className="form-control" type="text" name="satisfactionFeedback" />
                                         </fieldset>
 
-                                        
+
 
                                         <button className="btn btn-success" type="submit">Submit feedback</button>
                                     </Form>
@@ -1761,8 +1761,12 @@ className="alert alert-warning" /> */}
             feedbackRating: values.satisfactionLevel,
             feedbackComment: values.satisfactionFeedback,
             lessonId: this.state.lessonId,
-            feedbackDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ'),
-            instructorId: "",
+            feedbackTimestamp: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ')
+
+            //Feedback's instructor_application_user_id field is obtained at backend createFeedback() method FeedbackResource
+            // get courseId related to lessonid (lessonRepository)
+            // get instructorId related to courseId (courseRepository)
+            // add that to new feedback to be inserted
 
         }).then(
             //When successfully replied to comment

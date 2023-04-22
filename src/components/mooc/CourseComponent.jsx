@@ -8,6 +8,9 @@ import CourseDataService from '../../api/course/CourseDataService'
 import EnrolledDataService from '../../api/enrolled/EnrolledDataService'
 import LessonDataService from '../../api/lesson/LessonDataService'
 import { useHistory, useLocation } from 'react-router-dom';
+import BarChart from './BarChart.js'
+import FeedbackDataService from '../../api/feedback/FeedbackDataService'
+
 class CourseComponent extends Component {
     constructor(props) {
         super(props)
@@ -21,11 +24,20 @@ class CourseComponent extends Component {
             enrolledId: "",
             instructorName: "",
             username: AuthenticationService.getLoggedInUserName(),
-            relatedLessons: []
+            relatedLessons: [],
+            feedbackByCourseGroupedByLesson: [],
+            feedbackStats: [],
+            startDate: "",
+            endDate:""
         }
 
         // this.onSubmit = this.onSubmit.bind(this)
         // this.validate = this.validate.bind(this)
+        this.determineIfFromProfilePage = this.determineIfFromProfilePage.bind(this)
+        this.getAndParseFeedbackPeriods = this.getAndParseFeedbackPeriods.bind(this)
+        this.returnD3Chart = this.returnD3Chart.bind(this)
+        this.filterFeedbackAndEnrollData = this.filterFeedbackAndEnrollData.bind(this)
+        this.setDate = this.setDate.bind(this)
     }
 
 
@@ -33,19 +45,12 @@ class CourseComponent extends Component {
         // var id = this.state.courseId;
         // id = id.substring(0, id.indexOf("%"))
 
-        let x = window.location.href.indexOf("viewFromListCourseComponent") === -1;
-        // console.log("window.location.href: "+ x)
-        if (x === false) {
-            //viewing from ListCourseComponent, do not display buttons to view lessons
-            this.setState({
-                fromListCourseComponent: true
-            })
-        } else {
-            this.setState({
-                fromListCourseComponent: false
-            })
-        }
-        console.log("this.state.props.params.instructorId: " + this.props.params.instructorId)
+        this.determineIfFromProfilePage()
+
+        this.getAndParseFeedbackPeriods()
+
+
+
 
         CourseDataService.retrieveCourseByCourseId(this.state.courseId)
             .then(
@@ -108,10 +113,177 @@ class CourseComponent extends Component {
 
     }
 
+    getAndParseFeedbackPeriods() {
+
+
+        if(this.state.startDate !== "" && this.state.endDate !== ""){
+            FeedbackDataService.retreieveFeedbackByCourseGroupedByLesson(this.state.courseId)
+            .then(
+                response => {
+                    if (response !== undefined) {
+                        console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
+
+                        this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+                            var l = response.data
+
+                            var g = []
+                            //Iterate over sets of feedbacks for each lesson
+                            for (var j = 0; j < l.length; j++) {
+                                //Iterate over all feedback for a lesson
+                                var lessonFeedbackStats = {}
+                                var oneCounter = 0;
+                                var twoCounter = 0;
+                                var threeCounter = 0;
+                                var sumCounter = 0;
+                                for (var k = 0; k < l[j].length; k++) {
+                                    console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+                                    if (l[j][k].feedbackRating === 1) {
+                                        oneCounter++
+                                    } else if (l[j][k].feedbackRating === 2) {
+                                        twoCounter++
+                                    } else {
+                                        // l[j][k].feedbackRating === 3
+                                        threeCounter++
+                                    }
+                                    sumCounter = sumCounter + l[j][k].feedbackRating
+                                }
+
+                                let v = {
+                                    "lessonId": l[j][0].lessonId,
+                                    "oneCounter": oneCounter,
+                                    "twoCounter": twoCounter,
+                                    "threeCounter": threeCounter,
+                                    "averageRating": sumCounter / l[j].length
+                                }
+
+                                g.push(v);
+                            }
+
+
+                            //Store feedback stats
+                            this.setState({ feedbackStats: g }, () => {
+                                console.log("this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+                                // return this.returnD3Chart(this.state.feedbackStats)
+                            })
+
+
+
+
+
+                        })
+
+
+
+                    } else {
+
+                    }
+                }
+            )
+        }else{
+            FeedbackDataService.retreieveFeedbackByCourseGroupedByLessonByDates(this.state.courseId, this.state.startDate, this.state.endDate)
+            .then(
+                response => {
+                    if (response !== undefined) {
+                        console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
+
+                        this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+                            var l = response.data
+
+                            var g = []
+                            //Iterate over sets of feedbacks for each lesson
+                            for (var j = 0; j < l.length; j++) {
+                                //Iterate over all feedback for a lesson
+                                var lessonFeedbackStats = {}
+                                var oneCounter = 0;
+                                var twoCounter = 0;
+                                var threeCounter = 0;
+                                var sumCounter = 0;
+                                for (var k = 0; k < l[j].length; k++) {
+                                    console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+                                    if (l[j][k].feedbackRating === 1) {
+                                        oneCounter++
+                                    } else if (l[j][k].feedbackRating === 2) {
+                                        twoCounter++
+                                    } else {
+                                        // l[j][k].feedbackRating === 3
+                                        threeCounter++
+                                    }
+                                    sumCounter = sumCounter + l[j][k].feedbackRating
+                                }
+
+                                let v = {
+                                    "lessonId": l[j][0].lessonId,
+                                    "oneCounter": oneCounter,
+                                    "twoCounter": twoCounter,
+                                    "threeCounter": threeCounter,
+                                    "averageRating": sumCounter / l[j].length
+                                }
+
+                                g.push(v);
+                            }
+
+
+                            //Store feedback stats
+                            this.setState({ feedbackStats: g }, () => {
+                                console.log("this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+                                // return this.returnD3Chart(this.state.feedbackStats)
+                            })
+
+
+
+
+
+                        })
+
+
+
+                    } else {
+
+                    }
+                }
+            )
+        }
+        
+
+    }
+
+    determineIfFromProfilePage() {
+        let x = window.location.href.indexOf("viewFromListCourseComponent") === -1;
+        // console.log("window.location.href: "+ x)
+        if (x === false) {
+            //viewing from ListCourseComponent, do not display buttons to view lessons
+            this.setState({
+                fromListCourseComponent: true
+            })
+        } else {
+            this.setState({
+                fromListCourseComponent: false
+            })
+        }
+        console.log("this.state.props.params.instructorId: " + this.props.params.instructorId)
+    }
+
+    setDate(data){
+        console.log("this.state.date: "+ data)
+        var dayPlusOne = Number(data.substring(8, data.length))+1
+        console.log("dayPlusOne: " + dayPlusOne)
+        var dataCorrected = data.substring(0, 8) + dayPlusOne.toString()
+        console.log("dataCorrected:" + dataCorrected)
+        console.log("moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ') " + moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ'))
+
+        return moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ')
+    }
+
+    filterFeedbackAndEnrollData(){
+        console.log("in filterFeedbackAndEnrollData")
+        this.forceUpdate()
+    }
+
     enrollInCourse(courseId) {
         var enrolled = {
             username: AuthenticationService.getLoggedInUserName(),
-            courseId: courseId
+            courseId: courseId,
+            enrolledTimestamp: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ')
         }
 
         EnrolledDataService.createEnrolled(enrolled)
@@ -121,6 +293,7 @@ class CourseComponent extends Component {
                         enrolled: true,
                         enrolledId: response.data['id']
                     }, () => {
+                        // console.log("enrolled timestamp: " + enrolled.enrolledTimestamp)
                         console.log(JSON.stringify(response.data))
                     })
                 }
@@ -213,13 +386,69 @@ class CourseComponent extends Component {
                 <br></br>
                 <br></br>
                 {(this.state.enrolled && this.state.instructorId === undefined) && <div className="alert alert-success register">Already enrolled previously   </div>}
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                {/* {(this.state.instructorId !== undefined) && (<h2>Instructor dashboard</h2>)} */}
+                {
+                    (this.state.fromListCourseComponent === false) &&
+                    (<>
+                        <div className='visualizations'>
+                            {/* {(this.state.instructorId !== undefined) && (<h2>Instructor dashboard</h2>)}
+                            <form>
+                                <div>Filter feedback (start/end date)</div>
+                            <input type="date" id="start" name="feedback-start" onChange={(event)=>this.setState({startDate:this.setDate(event.target.value)}, ()=>{
+                                this.filterFeedbackAndEnrollData( )
+                                console.log("this.state.startDate" + this.state.startDate)})}/>
+                            <input type="date" id="end" name="feedback-start" onChange={(event)=>this.setState({endDate:this.setDate(event.target.value)}, ()=>{
+                                this.filterFeedbackAndEnrollData()
+                                console.log("this.state.endDate" + this.state.endDate)})}/>
+                            </form>
+                           
+                            <span className='ratingsHistogram' align="left" style={{ margin: "10px", display: "inline-flex" }}>
+                                {this.returnD3Chart()}
+
+                            
+                            </span>
+
+
+                            <span className='classEnrollment' align="right" style={{ margin: "10px", display: "inline-flex" }}>
+                                {this.returnD3Chart()}
+
+
+                            </span> */}
+                        <button onClick={()=>this.props.navigate(`/course/dashboard/${this.state.courseId}`)}>Go to dashboard</button>
+                        </div>
+
+                       
+                
 
 
 
+
+
+
+                    </> 
+                    )
+
+
+                }
             </>
         );
     }
+    returnD3Chart() {
+        return (
 
+            <BarChart
+                // data={[12, 5, 6, 6, 9, 10]}
+                courseId={this.state.courseId}
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
+                width={500}
+                height={300} />
+        )
+    }
 }
 //     //When Updating(PUT) or Creating(POST) comments
 //     onSubmit(values) {

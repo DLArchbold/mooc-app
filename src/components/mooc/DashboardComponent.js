@@ -3,15 +3,15 @@ import * as d3 from 'd3'
 import AuthenticationService from './AuthenticationService'
 import FeedbackDataService from '../../api/feedback/FeedbackDataService'
 import EnrolledDataService from '../../api/enrolled/EnrolledDataService'
-
-class BarChart extends Component {
+import moment from 'moment/moment'
+class DashboardComponent extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            courseId: this.props.courseId,
-            startDate: this.props.startDate,
-            endDate: this.props.endDate,
+            courseId: this.props.params.courseId,
+            startDate: moment(new Date("1980-03-22T20:00:00.000-04:00")).format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+            endDate: moment(new Date("2100-03-22T20:00:00.000-04:00")).format('YYYY-MM-DDTHH:mm:ss.sssZ'),
             fromListCourseComponent: "",
             description: "",
             course: {},
@@ -34,6 +34,7 @@ class BarChart extends Component {
         this.getAndParseEnrolledStudents = this.getAndParseEnrolledStudents.bind(this)
         this.drawChartEnrollment = this.drawChartEnrollment.bind(this)
         this.drawChartRatings = this.drawChartRatings.bind(this)
+        this.filterFeedbackAndEnrollData = this.filterFeedbackAndEnrollData.bind(this)
     }
     componentDidMount() {
         console.log("bc" + this.state.startDate + " " + this.state.endDate)
@@ -44,140 +45,272 @@ class BarChart extends Component {
     }
     getAndParseRatings() {
 
+        FeedbackDataService.retreieveFeedbackByCourseGroupedByLesson(this.state.courseId)
+            .then(
+                response => {
+                    if (response !== undefined) {
+                        console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
 
-     
+                        this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+                            var m = response.data
+
+                            var l = []
+                            console.log("m:" + JSON.stringify(m))
+                            var g = []
+
+
+
+
+                            for (var d = 0; d < m.length; d++) {
+                                console.log("m[d] feedbacks for dth lesson: " + JSON.stringify(m[d]))
+                                var lessonFeedbackStats = {}
+                                var oneCounter = 0;
+                                var twoCounter = 0;
+                                var threeCounter = 0;
+                                var sumCounter = 0;
+                                //For all lessons
+                                for (var n = 0; n < m[d].length; n++) {
+                                    //All Feedback for 1st, 2nd, 3rd or dth lesson 
+                                    // console.log("m[d]: " + m[d])
+                                    if (Date.parse(m[d][n].feedbackTimestamp) >= Date.parse(this.state.startDate)
+                                        && Date.parse(m[d][n].feedbackTimestamp) <= Date.parse(this.state.endDate)) {
+                                        // console.log("l.push(m[d][n]: " + l.push(m[d][n]);
+                                        console.log("m[d][n] nth feedback for dth lesson: " + JSON.stringify(m[d][n]))
+                                        if (m[d][n].feedbackRating === 1) {
+                                            oneCounter++
+                                        } else if (m[d][n].feedbackRating === 2) {
+                                            twoCounter++
+                                        } else {
+                                            // l[j][k].feedbackRating === 3
+                                            threeCounter++
+                                        }
+                                        sumCounter = sumCounter + m[d][n].feedbackRating
+
+
+                                        // }
+
+
+                                    }
+
+                                }
+
+
+                                let v = {
+                                    "lessonId": m[d][0].lessonId,
+                                    "oneCounter": oneCounter,
+                                    "twoCounter": twoCounter,
+                                    "threeCounter": threeCounter,
+                                    "averageRating": sumCounter / m[d].length
+                                }
+
+                                g.push(v);
+                            }
+
+
+                            //Iterate over sets of feedbacks for each lesson
+                            // for (var j = 0; j < l.length; j++) {
+                            //     //Iterate over all feedback for a lesson
+                            //     var lessonFeedbackStats = {}
+                            //     var oneCounter = 0;
+                            //     var twoCounter = 0;
+                            //     var threeCounter = 0;
+                            //     var sumCounter = 0;
+
+
+                            //     if (l[j].feedbackRating === 1) {
+                            //         oneCounter++
+                            //     } else if (l[j].feedbackRating === 2) {
+                            //         twoCounter++
+                            //     } else {
+                            //         // l[j][k].feedbackRating === 3
+                            //         threeCounter++
+                            //     }
+                            //     sumCounter = sumCounter + l[j].feedbackRating
+
+                            //     // for (var k = 0; k < l[j].length; k++) {
+                            //     //     console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+
+                            //     //     if(this.state.startDate!==""){
+
+
+                            //     //     }
+
+                            //     //     if (l[j][k].feedbackRating === 1) {
+                            //     //         oneCounter++
+                            //     //     } else if (l[j][k].feedbackRating === 2) {
+                            //     //         twoCounter++
+                            //     //     } else {
+                            //     //         // l[j][k].feedbackRating === 3
+                            //     //         threeCounter++
+                            //     //     }
+                            //     //     sumCounter = sumCounter + l[j][k].feedbackRating
+                            //     // }
+
+                            //     let v = {
+                            //         "lessonId": l[0].lessonId,
+                            //         "oneCounter": oneCounter,
+                            //         "twoCounter": twoCounter,
+                            //         "threeCounter": threeCounter,
+                            //         "averageRating": sumCounter / l.length
+                            //     }
+
+                            //     g.push(v);
+                            // }
+
+
+                            //Store feedback stats
+                            this.setState({ feedbackStats: g }, () => {
+                                console.log("barchart this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+                                this.drawChartRatings();
+
+                            })
+
+
+
+
+
+                        })
+
+
+
+                    } else {
+
+                    }
+                }
+            )
+
         console.log("in barchart getfeedback")
-        if (this.state.startDate === "" && this.state.endDate === "") {
-            FeedbackDataService.retreieveFeedbackByCourseGroupedByLesson(this.state.courseId)
-                .then(
-                    response => {
-                        if (response !== undefined) {
-                            console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
+        // if (this.state.startDate === "" && this.state.endDate === "") {
+        //     FeedbackDataService.retreieveFeedbackByCourseGroupedByLesson(this.state.courseId)
+        //         .then(
+        //             response => {
+        //                 if (response !== undefined) {
+        //                     console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
 
-                            this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
-                                var l = response.data
+        //                     this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+        //                         var l = response.data
 
-                                var g = []
-                                //Iterate over sets of feedbacks for each lesson
-                                for (var j = 0; j < l.length; j++) {
-                                    //Iterate over all feedback for a lesson
-                                    var lessonFeedbackStats = {}
-                                    var oneCounter = 0;
-                                    var twoCounter = 0;
-                                    var threeCounter = 0;
-                                    var sumCounter = 0;
-                                    for (var k = 0; k < l[j].length; k++) {
-                                        console.log("l[j][k]: " + JSON.stringify(l[j][k]));
-                                        if (l[j][k].feedbackRating === 1) {
-                                            oneCounter++
-                                        } else if (l[j][k].feedbackRating === 2) {
-                                            twoCounter++
-                                        } else {
-                                            // l[j][k].feedbackRating === 3
-                                            threeCounter++
-                                        }
-                                        sumCounter = sumCounter + l[j][k].feedbackRating
-                                    }
+        //                         var g = []
+        //                         //Iterate over sets of feedbacks for each lesson
+        //                         for (var j = 0; j < l.length; j++) {
+        //                             //Iterate over all feedback for a lesson
+        //                             var lessonFeedbackStats = {}
+        //                             var oneCounter = 0;
+        //                             var twoCounter = 0;
+        //                             var threeCounter = 0;
+        //                             var sumCounter = 0;
+        //                             for (var k = 0; k < l[j].length; k++) {
+        //                                 console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+        //                                 if (l[j][k].feedbackRating === 1) {
+        //                                     oneCounter++
+        //                                 } else if (l[j][k].feedbackRating === 2) {
+        //                                     twoCounter++
+        //                                 } else {
+        //                                     // l[j][k].feedbackRating === 3
+        //                                     threeCounter++
+        //                                 }
+        //                                 sumCounter = sumCounter + l[j][k].feedbackRating
+        //                             }
 
-                                    let v = {
-                                        "lessonId": l[j][0].lessonId,
-                                        "oneCounter": oneCounter,
-                                        "twoCounter": twoCounter,
-                                        "threeCounter": threeCounter,
-                                        "averageRating": sumCounter / l[j].length
-                                    }
+        //                             let v = {
+        //                                 "lessonId": l[j][0].lessonId,
+        //                                 "oneCounter": oneCounter,
+        //                                 "twoCounter": twoCounter,
+        //                                 "threeCounter": threeCounter,
+        //                                 "averageRating": sumCounter / l[j].length
+        //                             }
 
-                                    g.push(v);
-                                }
-
-
-                                //Store feedback stats
-                                this.setState({ feedbackStats: g }, () => {
-                                    console.log("barchart this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
-                                    this.drawChartRatings();
-
-                                })
+        //                             g.push(v);
+        //                         }
 
 
+        //                         //Store feedback stats
+        //                         this.setState({ feedbackStats: g }, () => {
+        //                             console.log("barchart this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+        //                             this.drawChartRatings();
 
-
-
-                            })
-
-
-
-                        } else {
-
-                        }
-                    }
-                )
-
-        } else {
-            FeedbackDataService.retreieveFeedbackByCourseGroupedByLessonByDates(this.state.courseId, this.state.startDate, this.state.endDate)
-                .then(
-                    response => {
-                        if (response !== undefined) {
-                            console.log("in retreieveFeedbackByCourseGroupedByLessonByDates: " + JSON.stringify(response.data))
-
-                            this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
-                                var l = response.data
-
-                                var g = []
-                                //Iterate over sets of feedbacks for each lesson
-                                for (var j = 0; j < l.length; j++) {
-                                    //Iterate over all feedback for a lesson
-                                    var lessonFeedbackStats = {}
-                                    var oneCounter = 0;
-                                    var twoCounter = 0;
-                                    var threeCounter = 0;
-                                    var sumCounter = 0;
-                                    for (var k = 0; k < l[j].length; k++) {
-                                        console.log("l[j][k]: " + JSON.stringify(l[j][k]));
-                                        if (l[j][k].feedbackRating === 1) {
-                                            oneCounter++
-                                        } else if (l[j][k].feedbackRating === 2) {
-                                            twoCounter++
-                                        } else {
-                                            // l[j][k].feedbackRating === 3
-                                            threeCounter++
-                                        }
-                                        sumCounter = sumCounter + l[j][k].feedbackRating
-                                    }
-
-                                    let v = {
-                                        "lessonId": l[j][0].lessonId,
-                                        "oneCounter": oneCounter,
-                                        "twoCounter": twoCounter,
-                                        "threeCounter": threeCounter,
-                                        "averageRating": sumCounter / l[j].length
-                                    }
-
-                                    g.push(v);
-                                }
-
-
-                                //Store feedback stats
-                                this.setState({ feedbackStats: g }, () => {
-                                    console.log("barchart this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
-                                    this.drawChartRatings();
-
-                                })
+        //                         })
 
 
 
 
 
-                            })
+        //                     })
 
 
 
-                        } else {
+        //                 } else {
 
-                        }
-                    }
-                )
+        //                 }
+        //             }
+        //         )
 
-        }
+        // } else {
+        //     FeedbackDataService.retreieveFeedbackByCourseGroupedByLessonByDates(this.state.courseId, this.state.startDate, this.state.endDate)
+        //         .then(
+        //             response => {
+        //                 if (response !== undefined) {
+        //                     console.log("in retreieveFeedbackByCourseGroupedByLessonByDates: " + JSON.stringify(response.data))
+
+        //                     this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+        //                         var l = response.data
+
+        //                         var g = []
+        //                         //Iterate over sets of feedbacks for each lesson
+        //                         for (var j = 0; j < l.length; j++) {
+        //                             //Iterate over all feedback for a lesson
+        //                             var lessonFeedbackStats = {}
+        //                             var oneCounter = 0;
+        //                             var twoCounter = 0;
+        //                             var threeCounter = 0;
+        //                             var sumCounter = 0;
+        //                             for (var k = 0; k < l[j].length; k++) {
+        //                                 console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+        //                                 if (l[j][k].feedbackRating === 1) {
+        //                                     oneCounter++
+        //                                 } else if (l[j][k].feedbackRating === 2) {
+        //                                     twoCounter++
+        //                                 } else {
+        //                                     // l[j][k].feedbackRating === 3
+        //                                     threeCounter++
+        //                                 }
+        //                                 sumCounter = sumCounter + l[j][k].feedbackRating
+        //                             }
+
+        //                             let v = {
+        //                                 "lessonId": l[j][0].lessonId,
+        //                                 "oneCounter": oneCounter,
+        //                                 "twoCounter": twoCounter,
+        //                                 "threeCounter": threeCounter,
+        //                                 "averageRating": sumCounter / l[j].length
+        //                             }
+
+        //                             g.push(v);
+        //                         }
+
+
+        //                         //Store feedback stats
+        //                         this.setState({ feedbackStats: g }, () => {
+        //                             console.log("barchart this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+        //                             this.drawChartRatings();
+
+        //                         })
+
+
+
+
+
+        //                     })
+
+
+
+        //                 } else {
+
+        //                 }
+        //             }
+        //         )
+
+        // }
 
     }
 
@@ -187,11 +320,21 @@ class BarChart extends Component {
             .then(
                 response => {
                     if (response.data != undefined) {
-
+                        var v = []
                         console.log("getAndParseEnrolledStudents: " + JSON.stringify(response.data))
-                        this.setState({ enrolled: response.data },
+                        for (var i = 0; i < response.data.length; i++) {
+                            // if (response.data[i].enrolledTimestamp )
+
+                            if (Date.parse(response.data[i].enrolledTimestamp) >= Date.parse(this.state.startDate)
+                                && Date.parse(response.data[i].enrolledTimestamp) <= Date.parse(this.state.endDate)) {
+                                v.push(response.data[i])
+                            }
+                        }
+
+                        this.setState({ enrolled: v },
                             () => {
                                 // this.drawChartEnrollment()
+                                console.log("this.state.enrolled: " + this.state.enrolled)
                             })
 
 
@@ -204,6 +347,13 @@ class BarChart extends Component {
     }
 
     drawChartEnrollment() {
+
+
+
+
+
+
+
         const maxBarHeight = 200
         const barChartWidth = 400
         //2nd barchart
@@ -236,8 +386,8 @@ class BarChart extends Component {
 
 
         const svg2 = d3.select(".classEnrollment").append("svg")
-            .attr("width", this.props.width)
-            .attr("height", this.props.height)
+            .attr("width", 500)
+            .attr("height", 300)
             .attr('class', 'ratings');
 
         svg2.append('text')
@@ -404,8 +554,8 @@ class BarChart extends Component {
         d3.selectAll("svg").remove();
 
         const svg = d3.select(".ratingsHistogram").append("svg")
-            .attr("width", this.props.width)
-            .attr("height", this.props.height)
+            .attr("width", 500)
+            .attr("height", 300)
             .attr('class', 'ratings');
 
         svg.append('text')
@@ -495,18 +645,94 @@ class BarChart extends Component {
     }
     setDate(data) {
         console.log("this.state.date: " + data)
+        // console.log("moment(new Date(data)).format('YYYY-MM-DDTHH:mm:ss.sssZ') " + moment(new Date(data)).format('YYYY-MM-DDTHH:mm:ss.sssZ'))
         var dayPlusOne = Number(data.substring(8, data.length)) + 1
         console.log("dayPlusOne: " + dayPlusOne)
         var dataCorrected = data.substring(0, 8) + dayPlusOne.toString()
         console.log("dataCorrected:" + dataCorrected)
-        console.log("moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.sssZ') " + moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ'))
+        console.log("moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ') " + moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ'))
 
         return moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ')
     }
-    render() {
-        return (<div id={"#" + this.props.id}>
 
-            {/* {d3.select(".filterFeedback").remove()}
+    filterFeedbackAndEnrollData() {
+        console.log("test this.state.startDate" + this.state.startDate)
+        console.log("test this.state.endDate" + this.state.endDate)
+        this.getAndParseRatings();
+
+        this.getAndParseEnrolledStudents();
+    }
+
+
+    render() {
+        return (
+
+            <><div id={"#" + this.props.id}>
+
+                <h1>Intstructor dashboard</h1>
+                <form className="filterFeedback">
+                    <h2>Filter feedback (start/end date)</h2>
+                    <input type="date" id="start" name="feedback-start" onChange={(event) => this.setState({ startDate: this.setDate(event.target.value) }, () => {
+                        this.filterFeedbackAndEnrollData()
+
+                        console.log("this.state.startDate" + this.state.startDate)
+                    })} />
+                    <input type="date" id="end" name="feedback-start" onChange={(event) => this.setState({ endDate: this.setDate(event.target.value) }, () => {
+                        this.filterFeedbackAndEnrollData()
+                        console.log("this.state.endDate" + this.state.endDate)
+                    })} />
+                </form>
+
+
+                <div className='visualizations'>
+                    <span className='ratingsHistogram' align="left" style={{ margin: "10px", display: "inline-flex" }}>
+                    </span>
+
+                    <span className='classEnrollment' align="right" style={{ margin: "10px", display: "inline-flex" }}>
+                    </span>
+                </div>
+
+                {/* <br></br>
+                <br></br>
+                <br></br>
+                <br></br> */}
+                <table className="table">
+                    <thead>
+                        <tr>
+
+                            <th>Lesson ID</th>
+                            <th>1-ratings</th>
+                            <th>2-ratings</th>
+                            <th>3-ratings</th>
+                            <th>avg-ratings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.feedbackStats.map(
+                                feedbackStat =>
+                                    <>
+                                        <tr key={feedbackStat.lessonId}>
+                                            <td>{feedbackStat.lessonId}</td>
+                                            <td>{feedbackStat.oneCounter}</td>
+                                            <td>{feedbackStat.twoCounter}</td>
+                                            <td>{feedbackStat.threeCounter}</td>
+                                            <td>{feedbackStat.averageRating}</td>
+
+                                            {/* <td>{(<button className="btn btn-success" onClick={() => this.unenrollInCourse(course.id)}>Unenroll/view</button>)}</td> */}
+
+                                        </tr>
+                                        {/* <tr>
+                                                    {(<button className="btn btn-success" onClick={() => this.unenrollInCourse(course.id)}>View course </button>)}
+                                                    </tr> */}
+                                    </>
+                            )
+                        }
+                    </tbody>
+                </table>
+
+
+                {/* {d3.select(".filterFeedback").remove()}
             {<form className="filterFeedback">
                 <div>Filter feedback (start/end date)</div>
                 <input type="date" id="start" name="feedback-start" onChange={(event) => this.setState({ startDate: this.setDate(event.target.value) }, () => {
@@ -522,11 +748,13 @@ class BarChart extends Component {
 
 
 
-        </div>)
+            </div>
+            </>
+        )
     }
 }
 
-export default BarChart;
+export default DashboardComponent;
 
 
 
