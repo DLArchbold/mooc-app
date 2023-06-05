@@ -347,13 +347,6 @@ class DashboardComponent extends Component {
     }
 
     drawChartEnrollment() {
-
-
-
-
-
-
-
         const maxBarHeight = 200
         const barChartWidth = 400
         //2nd barchart
@@ -365,12 +358,7 @@ class DashboardComponent extends Component {
         // console.log("ct:    " + ct)
         var cumsumEnrolled = d3.cumsum(ct)
         console.log("cumsumEnrolled: " + cumsumEnrolled)
-
-
-
-
-
-        //2nd barchart
+        
         var lineArr = []
         for (var u = 0; u < this.state.enrolled.length; u++) {
             var f = this.state.enrolled[u].enrolledTimestamp;
@@ -394,7 +382,7 @@ class DashboardComponent extends Component {
             .attr('class', 'label')
             .attr('transform', 'translate(10,200) rotate(270)')
             .attr('font-size', "15px")
-            .text('enrollments');
+            .text('Total enrollments');
 
         svg2.append('text')
             .attr('class', 'title')

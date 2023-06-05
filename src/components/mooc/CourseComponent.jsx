@@ -28,7 +28,7 @@ class CourseComponent extends Component {
             feedbackByCourseGroupedByLesson: [],
             feedbackStats: [],
             startDate: "",
-            endDate:""
+            endDate: ""
         }
 
         // this.onSubmit = this.onSubmit.bind(this)
@@ -116,134 +116,72 @@ class CourseComponent extends Component {
     getAndParseFeedbackPeriods() {
 
 
-        if(this.state.startDate !== "" && this.state.endDate !== ""){
+        if (this.state.startDate !== "" && this.state.endDate !== "") {
             FeedbackDataService.retreieveFeedbackByCourseGroupedByLesson(this.state.courseId)
-            .then(
-                response => {
-                    if (response !== undefined) {
-                        console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
+                .then(
+                    response => {
+                        if (response !== undefined) {
+                            console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
 
-                        this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
-                            var l = response.data
+                            this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
+                                var l = response.data
 
-                            var g = []
-                            //Iterate over sets of feedbacks for each lesson
-                            for (var j = 0; j < l.length; j++) {
-                                //Iterate over all feedback for a lesson
-                                var lessonFeedbackStats = {}
-                                var oneCounter = 0;
-                                var twoCounter = 0;
-                                var threeCounter = 0;
-                                var sumCounter = 0;
-                                for (var k = 0; k < l[j].length; k++) {
-                                    console.log("l[j][k]: " + JSON.stringify(l[j][k]));
-                                    if (l[j][k].feedbackRating === 1) {
-                                        oneCounter++
-                                    } else if (l[j][k].feedbackRating === 2) {
-                                        twoCounter++
-                                    } else {
-                                        // l[j][k].feedbackRating === 3
-                                        threeCounter++
+                                var g = []
+                                //Iterate over sets of feedbacks for each lesson
+                                for (var j = 0; j < l.length; j++) {
+                                    //Iterate over all feedback for a lesson
+                                    var lessonFeedbackStats = {}
+                                    var oneCounter = 0;
+                                    var twoCounter = 0;
+                                    var threeCounter = 0;
+                                    var sumCounter = 0;
+                                    for (var k = 0; k < l[j].length; k++) {
+                                        console.log("l[j][k]: " + JSON.stringify(l[j][k]));
+                                        if (l[j][k].feedbackRating === 1) {
+                                            oneCounter++
+                                        } else if (l[j][k].feedbackRating === 2) {
+                                            twoCounter++
+                                        } else {
+                                            // l[j][k].feedbackRating === 3
+                                            threeCounter++
+                                        }
+                                        sumCounter = sumCounter + l[j][k].feedbackRating
                                     }
-                                    sumCounter = sumCounter + l[j][k].feedbackRating
+
+                                    let v = {
+                                        "lessonId": l[j][0].lessonId,
+                                        "oneCounter": oneCounter,
+                                        "twoCounter": twoCounter,
+                                        "threeCounter": threeCounter,
+                                        "averageRating": sumCounter / l[j].length
+                                    }
+
+                                    g.push(v);
                                 }
 
-                                let v = {
-                                    "lessonId": l[j][0].lessonId,
-                                    "oneCounter": oneCounter,
-                                    "twoCounter": twoCounter,
-                                    "threeCounter": threeCounter,
-                                    "averageRating": sumCounter / l[j].length
-                                }
 
-                                g.push(v);
-                            }
+                                //Store feedback stats
+                                this.setState({ feedbackStats: g }, () => {
+                                    console.log("this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
+                                    // return this.returnD3Chart(this.state.feedbackStats)
+                                })
 
 
-                            //Store feedback stats
-                            this.setState({ feedbackStats: g }, () => {
-                                console.log("this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
-                                // return this.returnD3Chart(this.state.feedbackStats)
+
+
+
                             })
 
 
 
+                        } else {
 
-
-                        })
-
-
-
-                    } else {
-
+                        }
                     }
-                }
-            )
-        }else{
-            FeedbackDataService.retreieveFeedbackByCourseGroupedByLessonByDates(this.state.courseId, this.state.startDate, this.state.endDate)
-            .then(
-                response => {
-                    if (response !== undefined) {
-                        console.log("in getAndParseFeedbackPeriods: " + JSON.stringify(response.data))
-
-                        this.setState({ feedbackByCourseGroupedByLesson: response.data }, () => {
-                            var l = response.data
-
-                            var g = []
-                            //Iterate over sets of feedbacks for each lesson
-                            for (var j = 0; j < l.length; j++) {
-                                //Iterate over all feedback for a lesson
-                                var lessonFeedbackStats = {}
-                                var oneCounter = 0;
-                                var twoCounter = 0;
-                                var threeCounter = 0;
-                                var sumCounter = 0;
-                                for (var k = 0; k < l[j].length; k++) {
-                                    console.log("l[j][k]: " + JSON.stringify(l[j][k]));
-                                    if (l[j][k].feedbackRating === 1) {
-                                        oneCounter++
-                                    } else if (l[j][k].feedbackRating === 2) {
-                                        twoCounter++
-                                    } else {
-                                        // l[j][k].feedbackRating === 3
-                                        threeCounter++
-                                    }
-                                    sumCounter = sumCounter + l[j][k].feedbackRating
-                                }
-
-                                let v = {
-                                    "lessonId": l[j][0].lessonId,
-                                    "oneCounter": oneCounter,
-                                    "twoCounter": twoCounter,
-                                    "threeCounter": threeCounter,
-                                    "averageRating": sumCounter / l[j].length
-                                }
-
-                                g.push(v);
-                            }
-
-
-                            //Store feedback stats
-                            this.setState({ feedbackStats: g }, () => {
-                                console.log("this.state.feedbackStats:" + JSON.stringify(this.state.feedbackStats));
-                                // return this.returnD3Chart(this.state.feedbackStats)
-                            })
-
-
-
-
-
-                        })
-
-
-
-                    } else {
-
-                    }
-                }
-            )
+                )
+        } else {
         }
-        
+
 
     }
 
@@ -263,9 +201,9 @@ class CourseComponent extends Component {
         console.log("this.state.props.params.instructorId: " + this.props.params.instructorId)
     }
 
-    setDate(data){
-        console.log("this.state.date: "+ data)
-        var dayPlusOne = Number(data.substring(8, data.length))+1
+    setDate(data) {
+        console.log("this.state.date: " + data)
+        var dayPlusOne = Number(data.substring(8, data.length)) + 1
         console.log("dayPlusOne: " + dayPlusOne)
         var dataCorrected = data.substring(0, 8) + dayPlusOne.toString()
         console.log("dataCorrected:" + dataCorrected)
@@ -274,7 +212,7 @@ class CourseComponent extends Component {
         return moment(new Date(dataCorrected)).format('YYYY-MM-DDTHH:mm:ss.sssZ')
     }
 
-    filterFeedbackAndEnrollData(){
+    filterFeedbackAndEnrollData() {
         console.log("in filterFeedbackAndEnrollData")
         this.forceUpdate()
     }
@@ -418,18 +356,18 @@ class CourseComponent extends Component {
 
 
                             </span> */}
-                        <button onClick={()=>this.props.navigate(`/course/dashboard/${this.state.courseId}`)}>Go to dashboard</button>
+                            {(this.state.instructorId !== undefined) && (<button onClick={() => this.props.navigate(`/course/dashboard/${this.state.courseId}`)}>Go to dashboard</button>)}
                         </div>
 
-                       
-                
 
 
 
 
 
 
-                    </> 
+
+
+                    </>
                     )
 
 

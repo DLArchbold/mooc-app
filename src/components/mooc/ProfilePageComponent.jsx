@@ -363,12 +363,12 @@ class ProfilePageComponent extends Component {
 
                 <br></br>
 
-                <div className='viz' >
+                {/* <div className='viz' >
                     
                 </div>
                 {
                     this.returnD3Chart()
-                }
+                } */}
 
 
             </div>
