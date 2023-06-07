@@ -13,7 +13,7 @@ import Modal from 'react-modal'
 import "../../LessonComponent.css"
 import UserFollowingDataService from '../../api/userfollowing/UserFollowingDataService'
 import LessonDataService from '../../api/lesson/LessonDataService'
-
+import HelloWorldService from '../../api/comment/HelloWorldService'
 // toast.configure()
 
 
@@ -384,9 +384,16 @@ class LessonComponent extends Component {
                                             <h5 className="card-title" align="left"> {comment.username} - (comment id: {comment.id})
                                                 {(comment.commentType == 'question') && (<span className='marker'><span className='markerText'>Question</span></span>)}
                                                 {(comment.commentType == 'question') && (<span style={{ marginLeft: "5px" }}>Answered:</span>)}
-                                                {(comment.commentType == 'question') && (()=>{
-                                                    var p = new String(this.state.username)
-                                                    p.indexOf("instructor")!==-1})&& 
+                                                {(comment.commentType == 'question') && (
+
+                                                    () => {
+                                                        var p = new String(this.state.username)
+                                                        if (p.indexOf("instructor") !== -1) {
+                                                            return true;
+                                                        } else {
+                                                            return false;
+                                                        }
+                                                    }) &&
                                                     (<input onClick={() => this.checkAnswered(comment.username, comment.id, comment.description,
                                                         comment.urgencyLevel, comment.inResponseTo, comment.votes,
                                                         comment.commentType, !comment.answered)}
@@ -1208,7 +1215,9 @@ className="alert alert-warning" /> */}
                                 if (cIds.includes(this.state.masterComments[i]['inResponseTo'])
                                     && this.state.masterComments[i]['username'] === this.state.username) {
                                     cIds = cIds.filter(id => {
-                                        id != this.state.masterComments[i]['inResponseTo'];
+                                        if (id != this.state.masterComments[i]['inResponseTo']) {
+                                            return id;
+                                        }
                                     })
                                 }
                             }

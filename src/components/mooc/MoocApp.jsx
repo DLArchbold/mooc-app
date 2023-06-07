@@ -24,6 +24,8 @@ import CourseComponent from './CourseComponent.jsx'
 import ProfilePageComponent from './ProfilePageComponent.jsx'
 import LessonComponentTemplate from './LessonComponentTemplate.jsx'
 import DashboardComponent from './DashboardComponent.js'
+import AuthCodeReader from '../AuthCodeReader.jsx'
+
 
 import '../../MoocApp.css'
 class MoocApp extends Component {
@@ -48,6 +50,8 @@ class MoocApp extends Component {
         const ProfilePageComponentWithParamsAndNavigation = withParams(withNavigation(ProfilePageComponent));
         const LessonComponentWithParamsAndNavigation = withParams(withNavigation(LessonComponentTemplate));
         const DashboardComponentWithParamsAndNavigation = withParams(withNavigation(DashboardComponent));
+        
+
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         console.log(isUserLoggedIn);
@@ -61,6 +65,12 @@ class MoocApp extends Component {
                         <Route path="/" element={<LoginComponentWithNavigation />} />
                         <Route path="/login" element={
                             <LoginComponentWithNavigation />
+                        } />
+
+                        <Route path="/authcodeReader" element={
+                            // <AuthenticatedRoute>
+                            <AuthCodeReader />
+                            // </AuthenticatedRoute>
                         } />
                         <Route path="/welcome/:name" element={
                             <AuthenticatedRoute>

@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import AuthenticationService from './AuthenticationService'
 import FeedbackDataService from '../../api/feedback/FeedbackDataService'
 import EnrolledDataService from '../../api/enrolled/EnrolledDataService'
+import * as moment from 'moment'
 
 class BarChart extends Component {
 
