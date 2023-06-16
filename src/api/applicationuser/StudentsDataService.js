@@ -1,9 +1,15 @@
 
 
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, AUTH_URL, FLAG, reqInstance } from '../../Constants'
 class FeedbackDataService{
-    urlType = FLAG;
+
+    constructor(){
+        this.urlType = FLAG;
+        this.API_URL = this.getUrl(this.urlType);
+        this.request = reqInstance;
+    }
+    // urlType = FLAG;
 
     
     getUrl(urlType){
@@ -14,22 +20,22 @@ class FeedbackDataService{
         }
      }
     retrieveAllStudents(){
-        let API_URL = this.getUrl(this.urlType)
+        //let API_URL = this.getUrl(this.urlType)
         // return Promise.resolve({data:[
         //     {'id':1, 'email':'Student1@gatech.edu', 'name': 'Student 1', 'lessonId': 1, 'interests': 'data science, ML, Computer vision'},
         //     {'id':2, 'email':'Student2@gatech.edu', 'name': 'Student 2', 'lessonId': 2, 'interests': 'Web development, IoT'}
         // ]})
-            return axios.get(`${API_URL}/students`);
+            return this.request.get(this.API_URL+ `/students`);
     }
 
     retrieveAllStudentsForALesson(lessonId){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/students/lessonId/${lessonId}/`);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.get(this.API_URL+ `/students/lessonId/${lessonId}`);
     }
 
     retrieveAllStudentsForInterest(interest){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/students/interests/${interest}/`);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.get(this.API_URL+ `/students/interests/${interest}`);
     }
 }
 

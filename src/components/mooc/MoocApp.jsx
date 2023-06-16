@@ -24,7 +24,7 @@ import CourseComponent from './CourseComponent.jsx'
 import ProfilePageComponent from './ProfilePageComponent.jsx'
 import LessonComponentTemplate from './LessonComponentTemplate.jsx'
 import DashboardComponent from './DashboardComponent.js'
-import AuthCodeReader from '../AuthCodeReader.jsx'
+import AuthCodeReader from './AuthCodeReader.jsx'
 
 
 import '../../MoocApp.css'
@@ -35,7 +35,7 @@ class MoocApp extends Component {
         const LoginComponentWithNavigation = withNavigation(LoginComponent);
         //Components using withParams() allow them to get key/value pairs of dynamic params from URL, 
         //for example /name=cs8803
-        const WelcomeComponentWithParams = withParams(WelcomeComponent);
+        const WelcomeComponentWithParamsAndNavigation = withParams(withNavigation(WelcomeComponent));
         const HeaderComponentWithNavigation = withNavigation(HeaderComponent);
         const ListCommentsComponentWithNavigation = withNavigation(ListCommentsComponent);
         const ListFeedbackComponentWithNavigation = withNavigation(ListFeedbackComponent);
@@ -74,7 +74,7 @@ class MoocApp extends Component {
                         } />
                         <Route path="/welcome/:name" element={
                             <AuthenticatedRoute>
-                                <WelcomeComponentWithParams />
+                                <WelcomeComponentWithParamsAndNavigation />
                             </AuthenticatedRoute>
                         } />
                         <Route path="/comments" element={

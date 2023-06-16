@@ -237,8 +237,11 @@ class ProfilePageComponent extends Component {
         CourseDataService.retrieveCourseByInstructorApplicationUserId(this.state.appplicationUserDetails.id)
             .then(
                 response => {
-                    this.setState({ createdCourses: response.data })
-                    console.log("created courses: " + JSON.stringify(this.state.createdCourses))
+                    if (response !== undefined) {
+                        this.setState({ createdCourses: response.data })
+                        console.log("created courses: " + JSON.stringify(this.state.createdCourses))
+                    }
+
                 }
             )
     }

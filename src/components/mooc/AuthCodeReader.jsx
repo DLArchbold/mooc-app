@@ -1,4 +1,4 @@
-import '../App.css';
+import '../../App.css';
 import $ from "jquery"
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Link, Routes } from 'react-router-dom';

@@ -1,9 +1,13 @@
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, FLAG, reqInstance } from '../../Constants'
 
 class UserFollowingDataService{
-
-     urlType = FLAG;
+    constructor(){
+        this.urlType = FLAG;
+        this.API_URL = this.getUrl(this.urlType);
+        this.request = reqInstance;
+    }
+    //  urlType = FLAG;
     //  API_URL = LOCAL_API_URL;
 
      getUrl(urlType){
@@ -14,8 +18,8 @@ class UserFollowingDataService{
         }
      }
     createUserFollow(userFollow){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.post(`${API_URL}/user_follow/create`, userFollow)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.post(this.API_URL+ `/user_follow/create`, userFollow)
         .catch(function(error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -37,8 +41,8 @@ class UserFollowingDataService{
     }
 
     getUserFollowUsingEmailAndLessonId(email, lessonId){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/user_follow/get/usingEmailAndLessonId/${email}/${lessonId}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/user_follow/get/usingEmailAndLessonId/${email}/${lessonId}`)
         .catch(function(error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -60,8 +64,8 @@ class UserFollowingDataService{
     }
 
     deleteUserFollowUsingEmailAndLessonIdAndCommentId(email, lessonId, commentId){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.delete(`${API_URL}/user_follow/delete/${email}/${lessonId}/${commentId}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.delete(this.API_URL+ `/user_follow/delete/${email}/${lessonId}/${commentId}`)
         .catch(function(error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -88,21 +92,21 @@ class UserFollowingDataService{
 
     // deleteComment(name, id){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.delete(`${API_URL}/users/${name}/comments/${id}`);
+    //     return this.request.delete(this.API_URL+ `/users/${name}/comments/${id}`);
         
         
     // }
 
     // updateComment(name, id, comment){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.put(`${API_URL}/users/${name}/comments/${id}`, comment);
+    //     return this.request.put(this.API_URL+ `/users/${name}/comments/${id}`, comment);
         
         
     // }
 
     //  createComment(name,  comment){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.post(`${API_URL}/users/${name}/comments`, comment);
+    //     return this.request.post(this.API_URL+ `/users/${name}/comments`, comment);
 // }
        
     

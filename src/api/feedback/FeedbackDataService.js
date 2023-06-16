@@ -1,9 +1,14 @@
 
 
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, FLAG, reqInstance } from '../../Constants'
 class FeedbackDataService{
-    urlType = FLAG;
+    constructor(){
+        this.urlType = FLAG;
+        this.API_URL = this.getUrl(this.urlType);
+        this.request = reqInstance;
+    }
+    // urlType = FLAG;
 
     
     getUrl(urlType){
@@ -14,22 +19,22 @@ class FeedbackDataService{
         }
      }
     retrieveAllFeedback(){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/feedback`);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.get(this.API_URL+ `/feedback`);
         
        
     }
 
     retrieveAllFeedbackForALesson(lessonId){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.get(`${API_URL}/${lessonId}/feedback`);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.get(this.API_URL+ `/${lessonId}/feedback`);
         
         
     }
 
     retreieveFeedbackByCourseGroupedByLesson(courseId){
-        let API_URL = this.getUrl(this.urlType)
-        return axios.get(`${API_URL}/feedback/getFeedbackForEachLessonInCourse/${courseId}`)
+        //let API_URL = this.getUrl(this.urlType)
+        return this.request.get(this.API_URL+ `/feedback/getFeedbackForEachLessonInCourse/${courseId}`)
     }
 
     // retreieveFeedbackByCourseGroupedByLessonByDates(courseId, startDate, endDate){
@@ -41,21 +46,21 @@ class FeedbackDataService{
     //     if(endDate===""){
     //         endDate = "undefined"
     //     }
-    //     return axios.get(`${API_URL}/feedback/getFeedbackForEachLessonInCourse/${courseId}/${startDate}/${endDate}`)
+    //     return this.request.get(this.API_URL+ `/feedback/getFeedbackForEachLessonInCourse/${courseId}/${startDate}/${endDate}`)
     // }
 
 
 
     deleteFeedback(lessonId, feedbackId){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.delete(`${API_URL}/${lessonId}/feedback/${feedbackId}`);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.delete(this.API_URL+ `/${lessonId}/feedback/${feedbackId}`);
         
        
     }
 
      createFeedback(lessonId, feedback){
-        let API_URL = this.getUrl(this.urlType)
-            return axios.post(`${API_URL}/${lessonId}/feedback`, feedback);
+        //let API_URL = this.getUrl(this.urlType)
+            return this.request.post(this.API_URL+ `/${lessonId}/feedback`, feedback);
         
         
     }

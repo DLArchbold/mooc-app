@@ -10,17 +10,21 @@ class WelcomeComponent extends Component{
             super(props)
             this.retrieveWelcomeMessage= this.retrieveWelcomeMessage.bind(this) 
             this.state={
-                welcomeMessage:''
+                welcomeMessage:'',
+                email: sessionStorage.getItem('authenticatedUser')
             }
             this.handleSuccessfulResponse = this.handleSuccessfulResponse.bind(this)
             this.handleError = this.handleError.bind(this)
+    }
+    componentDidMount(){
+        this.props.navigate(`/welcome/${this.state.email}`)
     }
 
     render() {
         return (
             <>
                 <h1>Welcome!</h1>
-                <div className="container">
+                <div className="container" id='welcome-message'>
                 Welcome {AuthenticationService.getLoggedInUserName()}. 
                 View all instructor comments <Link to="/comments">here</Link>.
                 </div>
@@ -51,7 +55,7 @@ class WelcomeComponent extends Component{
 
     handleSuccessfulResponse(response){
         console.log(response)
-        this.setState({welcomeMessage: response.data.message})
+        this.setState({welcomeMessage: response.data})
     }
 
     handleError(error){

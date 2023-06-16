@@ -1,9 +1,13 @@
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, FLAG , reqInstance} from '../../Constants'
 
 class LessonDataService {
-
-    urlType = FLAG;
+    constructor(){
+        this.urlType = FLAG;
+        this.API_URL = this.getUrl(this.urlType);
+        this.request = reqInstance;
+    }
+    // urlType = FLAG;
     //  API_URL = LOCAL_API_URL;
 
     getUrl(urlType) {
@@ -19,19 +23,19 @@ class LessonDataService {
 
     // retrieveAllComments(){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.get(`${API_URL}/users/comments`);
+    //     return this.request.get(this.API_URL+ `/users/comments`);
     // }
 
     retrieveLessonById(lessonId){
-        let API_URL = this.getUrl(this.urlType)
-        return axios.get(`${API_URL}/lesson/get/${lessonId}`);
+        //let API_URL = this.getUrl(this.urlType)
+        return this.request.get(this.API_URL+ `/lesson/get/${lessonId}`);
 
 
     }
 
     retrieveLessonsByCourseId(courseId) {
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/lesson/get/usingCourseId/${courseId}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/lesson/get/usingCourseId/${courseId}`)
         .catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -55,19 +59,19 @@ class LessonDataService {
 
     // retrieveTopLevelCommentsByLessonId(lessonId){
     //     let API_URL = this.getUrl(this.urlType);
-    //     return axios.get(`${API_URL}/users/comments/${lessonId}/all/toplevel`)
+    //     return this.request.get(this.API_URL+ `/users/comments/${lessonId}/all/toplevel`)
 
     // }
 
     // retrieveTopLevelCommentsByLessonIdByEmail(email, inResponseTo, lessonId){
     //     let API_URL = this.getUrl(this.urlType);
-    //     return axios.get(`${API_URL}/users/comments/${lessonId}/${email}/all/toplevel`)
+    //     return this.request.get(this.API_URL+ `/users/comments/${lessonId}/${email}/all/toplevel`)
     // }
 
 
     // retrieveTopLevelCommentsByLessonIdByEmailToRespond(email, lessonId){
     //     let API_URL = this.getUrl(this.urlType);
-    //     return axios.get(`${API_URL}/users/comments/${lessonId}/${email}/all/toplevel/ToRespond`)
+    //     return this.request.get(this.API_URL+ `/users/comments/${lessonId}/${email}/all/toplevel/ToRespond`)
     // }
 
 
@@ -75,22 +79,22 @@ class LessonDataService {
 
     // deleteComment(name, id){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.delete(`${API_URL}/users/${name}/comments/${id}`);
+    //     return this.request.delete(this.API_URL+ `/users/${name}/comments/${id}`);
 
 
     // }
 
     // updateComment(name, id, comment){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.put(`${API_URL}/users/${name}/comments/${id}`, comment);
+    //     return this.request.put(this.API_URL+ `/users/${name}/comments/${id}`, comment);
 
 
     // }
 
     createLesson(lesson) {
         console.log("in create lesson")
-        let API_URL = this.getUrl(this.urlType)
-        return axios.post(`${API_URL}/lesson/create`, lesson);
+        //let API_URL = this.getUrl(this.urlType)
+        return this.request.post(this.API_URL+ `/lesson/create`, lesson);
 
 
     }

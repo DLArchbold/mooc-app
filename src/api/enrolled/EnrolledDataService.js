@@ -1,9 +1,13 @@
 import axios from "axios";
-import { REMOTE_API_URL, LOCAL_API_URL, FLAG } from '../../Constants'
+import { REMOTE_API_URL, LOCAL_API_URL, FLAG, reqInstance } from '../../Constants'
 
 class EnrolledDataService{
-
-    urlType = FLAG;
+    constructor(){
+        this.urlType = FLAG;
+        this.API_URL = this.getUrl(this.urlType);
+        this.request = reqInstance;
+    }
+    // urlType = FLAG;
     //  API_URL = LOCAL_API_URL;
 
      getUrl(urlType){
@@ -19,43 +23,43 @@ class EnrolledDataService{
 
     // retrieveAllCourses(){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.get(`${API_URL}/course/get/all`);
+    //     return this.request.get(this.API_URL+ `/course/get/all`);
     // }
 
     // retrieveComment(name, id){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.get(`${API_URL}/users/${name}/comments/${id}`);
+    //     return this.request.get(this.API_URL+ `/users/${name}/comments/${id}`);
         
         
     // }
 
     retrieveCommentsByUsername(lessonId){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/users/comments/${lessonId}/all`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/users/comments/${lessonId}/all`)
   
     }
 
     retrieveEnrolledByCourseId(courseId){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/enrolled/get/getByCourseId/${courseId}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/enrolled/get/getByCourseId/${courseId}`)
   
     }
 
     // retrieveTopLevelCommentsByLessonId(lessonId){
     //     let API_URL = this.getUrl(this.urlType);
-    //     return axios.get(`${API_URL}/users/comments/${lessonId}/all/toplevel`)
+    //     return this.request.get(this.API_URL+ `/users/comments/${lessonId}/all/toplevel`)
   
     // }
 
     // retrieveTopLevelCommentsByLessonIdByEmail(email, inResponseTo, lessonId){
     //     let API_URL = this.getUrl(this.urlType);
-    //     return axios.get(`${API_URL}/users/comments/${lessonId}/${email}/all/toplevel`)
+    //     return this.request.get(this.API_URL+ `/users/comments/${lessonId}/${email}/all/toplevel`)
     // }
 
 
     retrieveEnrolledByCourseIdAndUsername(enrolled){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/enrolled/get/byCourseIdByUsername/${enrolled['courseId']}/${enrolled['username']}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/enrolled/get/byCourseIdByUsername/${enrolled['courseId']}/${enrolled['username']}`)
         .catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -76,8 +80,8 @@ class EnrolledDataService{
         });
     }
     retrieveEnrolledByUsername(username){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/enrolled/get/byUsername/${username}`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/enrolled/get/byUsername/${username}`)
         .catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -99,8 +103,8 @@ class EnrolledDataService{
     }
 
     retrieveEnrolledCourseDetails(username){
-        let API_URL = this.getUrl(this.urlType);
-        return axios.get(`${API_URL}/enrolled/get/byUsername/${username}/returnCourseDetails`)
+        //let API_URL = this.getUrl(this.urlType);
+        return this.request.get(this.API_URL+ `/enrolled/get/byUsername/${username}/returnCourseDetails`)
         .catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -123,22 +127,22 @@ class EnrolledDataService{
 
 
     deleteEnrolled(enrolledId){
-        let API_URL = this.getUrl(this.urlType)
-        return axios.delete(`${API_URL}/enrolled/delete/${enrolledId}`);
+        //let API_URL = this.getUrl(this.urlType)
+        return this.request.delete(this.API_URL+ `/enrolled/delete/${enrolledId}`);
         
         
     }
 
     // updateComment(name, id, comment){
     //     let API_URL = this.getUrl(this.urlType)
-    //     return axios.put(`${API_URL}/users/${name}/comments/${id}`, comment);
+    //     return this.request.put(this.API_URL+ `/users/${name}/comments/${id}`, comment);
         
         
     // }
 
      createEnrolled(enrolled){
-        let API_URL = this.getUrl(this.urlType)
-        return axios.post(`${API_URL}/enrolled/create`, enrolled);
+        //let API_URL = this.getUrl(this.urlType)
+        return this.request.post(this.API_URL+ `/enrolled/create`, enrolled);
         
        
     }
