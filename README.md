@@ -22,5 +22,5 @@ https://github.com/DLArchbold/KeycloakInstallation
 # Amazon EC2 Machine Image (AMI) of CI/CD server with appropriate Jenkins configuration and all of the above installed and configured 
 - Please request for link to AMI
 
-# Amazon EC2 Machine Image (AMI) of Tomcat deployment server 
+# Amazon EC2 Machine Image (AMI) of Tomcat web server 
 - Please request for link to AMI
