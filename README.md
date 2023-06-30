@@ -14,7 +14,7 @@ https://github.com/DLArchbold/ApiGateway
 
 # MySQL Database Server
 Run Docker command to download image container: 
-docker run --detach --env MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>  --env MYSQL_USER=<MYSQL_USER> --env MYSQL_PASSWORD=<MYSQL_PASSWORD> --env MYSQL_DATABASE=<MYSQL_DATABASE> --name mysql --publish 3306:3306 mysql:5.7 . Replace <MYSQL_ROOT_PASSWORD>, <MYSQL_USER>, <MYSQL_PASSWORD>, and <MYSQL_DATABASE> with values in data.sql file in [mooc---backend](https://github.com/DLArchbold/mooc-app-backend)
+docker run --detach --env MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>  --env MYSQL_USER=<MYSQL_USER> --env MYSQL_PASSWORD=<MYSQL_PASSWORD> --env MYSQL_DATABASE=<MYSQL_DATABASE> --name mysql --publish 3306:3306 mysql:5.7 . Replace <MYSQL_ROOT_PASSWORD>, <MYSQL_USER>, <MYSQL_PASSWORD>, and <MYSQL_DATABASE> with values in data.sql file in https://github.com/DLArchbold/mooc-app-backend
 
 
 
