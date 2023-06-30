@@ -15,3 +15,5 @@ RUN rm -rf ./*
 COPY --from=builder /app/build .
 COPY ./nginx.conf /etc/nginx/nginx.conf
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+#Final version-2023-06-30
